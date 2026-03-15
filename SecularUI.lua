@@ -82,7 +82,7 @@ local function AddGlassEffect(frame, transparency)
         BackgroundTransparency = 1,
         Image = "rbxassetid://8992230677",
         ImageColor3 = Color3.fromRGB(0, 0, 0),
-        ImageTransparency = transparency or 0.85,
+        ImageTransparency = transparency or 0.4,
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(99, 99, 99, 99),
         ZIndex = frame.ZIndex - 1,
@@ -162,7 +162,7 @@ function NotificationSystem:ShowNext()
     })
     stroke.Parent = notifFrame
     
-    AddGlassEffect(notifFrame, 0.9)
+    AddGlassEffect(notifFrame, 0.4)
     
     local layout = Create("UIListLayout", {
         Padding = UDim.new(0, 8),
@@ -299,7 +299,7 @@ function ColorPicker:New(parent, defaultColor, callback)
     local pickerCorner = Create("UICorner", {CornerRadius = UDim.new(0, 16)})
     pickerCorner.Parent = self.PickerFrame
     
-    AddGlassEffect(self.PickerFrame, 0.88)
+    AddGlassEffect(self.PickerFrame, 0.4)
     
     local pickerPadding = Create("UIPadding", {
         PaddingTop = UDim.new(0, 16),
@@ -611,7 +611,7 @@ function Solar:CreateWindow(config)
         Parent = window.ScaleFrame,
     })
     
-    AddGlassEffect(window.MainFrame, 0.82)
+    AddGlassEffect(window.MainFrame, 0.4)
     
     local mainCorner = Create("UICorner", {CornerRadius = UDim.new(0, 20)})
     mainCorner.Parent = window.MainFrame
