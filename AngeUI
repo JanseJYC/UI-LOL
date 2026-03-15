@@ -6,6 +6,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
 
 local function New(instanceType, properties, children)
     local instance = Instance.new(instanceType)
@@ -115,6 +116,242 @@ local Icons = {
     ["trash"] = "rbxassetid://10723434557",
     ["lock"] = "rbxassetid://10734950020",
     ["unlock"] = "rbxassetid://10723415128",
+    ["plus"] = "rbxassetid://10723434557",
+    ["minus-circle"] = "rbxassetid://10723415128",
+    ["moon"] = "rbxassetid://10734950020",
+    ["sun"] = "rbxassetid://10723415128",
+    ["user"] = "rbxassetid://10723434557",
+    ["users"] = "rbxassetid://10734950020",
+    ["target"] = "rbxassetid://10723415128",
+    ["crosshair"] = "rbxassetid://10723434557",
+    ["shield"] = "rbxassetid://10734950020",
+    ["sword"] = "rbxassetid://10723415128",
+    ["heart"] = "rbxassetid://10723434557",
+    ["star"] = "rbxassetid://10734950020",
+    ["award"] = "rbxassetid://10723415128",
+    ["clock"] = "rbxassetid://10723434557",
+    ["calendar"] = "rbxassetid://10734950020",
+    ["map"] = "rbxassetid://10723415128",
+    ["compass"] = "rbxassetid://10723434557",
+    ["anchor"] = "rbxassetid://10734950020",
+    ["box"] = "rbxassetid://10723415128",
+    ["package"] = "rbxassetid://10723434557",
+    ["gift"] = "rbxassetid://10734950020",
+    ["dollar"] = "rbxassetid://10723415128",
+    ["credit-card"] = "rbxassetid://10723434557",
+    ["shopping-cart"] = "rbxassetid://10734950020",
+    ["bag"] = "rbxassetid://10723415128",
+    ["tag"] = "rbxassetid://10723434557",
+    ["bookmark"] = "rbxassetid://10734950020",
+    ["flag"] = "rbxassetid://10723415128",
+    ["bell"] = "rbxassetid://10723434557",
+    ["volume"] = "rbxassetid://10734950020",
+    ["mic"] = "rbxassetid://10723415128",
+    ["video"] = "rbxassetid://10723434557",
+    ["camera"] = "rbxassetid://10734950020",
+    ["image-icon"] = "rbxassetid://10723415128",
+    ["folder"] = "rbxassetid://10723434557",
+    ["file"] = "rbxassetid://10734950020",
+    ["paperclip"] = "rbxassetid://10723415128",
+    ["link"] = "rbxassetid://10723434557",
+    ["external-link"] = "rbxassetid://10734950020",
+    ["share"] = "rbxassetid://10723415128",
+    ["send"] = "rbxassetid://10723434557",
+    ["mail"] = "rbxassetid://10734950020",
+    ["message"] = "rbxassetid://10723415128",
+    ["chat"] = "rbxassetid://10723434557",
+    ["comment"] = "rbxassetid://10734950020",
+    ["hash"] = "rbxassetid://10723415128",
+    ["at-sign"] = "rbxassetid://10723434557",
+    ["phone"] = "rbxassetid://10734950020",
+    ["wifi"] = "rbxassetid://10723415128",
+    ["bluetooth"] = "rbxassetid://10723434557",
+    ["battery"] = "rbxassetid://10734950020",
+    ["cpu"] = "rbxassetid://10723415128",
+    ["monitor"] = "rbxassetid://10723434557",
+    ["smartphone"] = "rbxassetid://10734950020",
+    ["tablet"] = "rbxassetid://10723415128",
+    ["watch"] = "rbxassetid://10723434557",
+    ["activity"] = "rbxassetid://10734950020",
+    ["bar-chart"] = "rbxassetid://10723415128",
+    ["pie-chart"] = "rbxassetid://10723434557",
+    ["trending-up"] = "rbxassetid://10734950020",
+    ["trending-down"] = "rbxassetid://10723415128",
+    ["loader"] = "rbxassetid://10723434557",
+    ["download"] = "rbxassetid://10734950020",
+    ["upload"] = "rbxassetid://10723415128",
+    ["cloud"] = "rbxassetid://10723434557",
+    ["cloud-rain"] = "rbxassetid://10734950020",
+    ["cloud-snow"] = "rbxassetid://10723415128",
+    ["sun-weather"] = "rbxassetid://10723434557",
+    ["moon-weather"] = "rbxassetid://10734950020",
+    ["thermometer"] = "rbxassetid://10723415128",
+    ["droplet"] = "rbxassetid://10723434557",
+    ["wind"] = "rbxassetid://10734950020",
+    ["umbrella"] = "rbxassetid://10723415128",
+    ["flame"] = "rbxassetid://10723434557",
+    ["snowflake"] = "rbxassetid://10734950020",
+    ["eye"] = "rbxassetid://10723415128",
+    ["eye-off"] = "rbxassetid://10723434557",
+    ["git-branch"] = "rbxassetid://10734950020",
+    ["git-commit"] = "rbxassetid://10723415128",
+    ["git-merge"] = "rbxassetid://10723434557",
+    ["git-pull-request"] = "rbxassetid://10734950020",
+    ["github"] = "rbxassetid://10723415128",
+    ["gitlab"] = "rbxassetid://10723434557",
+    ["code"] = "rbxassetid://10734950020",
+    ["terminal"] = "rbxassetid://10723415128",
+    ["play"] = "rbxassetid://10723434557",
+    ["pause"] = "rbxassetid://10734950020",
+    ["stop"] = "rbxassetid://10723415128",
+    ["skip-forward"] = "rbxassetid://10723434557",
+    ["skip-back"] = "rbxassetid://10734950020",
+    ["shuffle"] = "rbxassetid://10723415128",
+    ["repeat-icon"] = "rbxassetid://10723434557",
+    ["mic-off"] = "rbxassetid://10734950020",
+    ["volume-x"] = "rbxassetid://10723415128",
+    ["volume-1"] = "rbxassetid://10723434557",
+    ["volume-2"] = "rbxassetid://10734950020",
+    ["airplay"] = "rbxassetid://10723415128",
+    ["cast"] = "rbxassetid://10723434557",
+    ["radio"] = "rbxassetid://10734950020",
+    ["tv"] = "rbxassetid://10723415128",
+    ["film"] = "rbxassetid://10723434557",
+    ["music"] = "rbxassetid://10734950020",
+    ["headphones"] = "rbxassetid://10723415128",
+    ["speaker"] = "rbxassetid://10723434557",
+    ["layers"] = "rbxassetid://10734950020",
+    ["layout"] = "rbxassetid://10723415128",
+    ["grid"] = "rbxassetid://10723434557",
+    ["list"] = "rbxassetid://10734950020",
+    ["sidebar"] = "rbxassetid://10723415128",
+    ["menu"] = "rbxassetid://10723434557",
+    ["more-horizontal"] = "rbxassetid://10734950020",
+    ["more-vertical"] = "rbxassetid://10723415128",
+    ["chevron-left"] = "rbxassetid://10723434557",
+    ["chevron-right"] = "rbxassetid://10734950020",
+    ["chevron-up"] = "rbxassetid://10723415128",
+    ["chevron-down"] = "rbxassetid://10723434557",
+    ["arrow-left"] = "rbxassetid://10734950020",
+    ["arrow-right"] = "rbxassetid://10723415128",
+    ["arrow-up"] = "rbxassetid://10723434557",
+    ["arrow-down"] = "rbxassetid://10734950020",
+    ["corner-up-left"] = "rbxassetid://10723415128",
+    ["corner-up-right"] = "rbxassetid://10723434557",
+    ["corner-down-left"] = "rbxassetid://10734950020",
+    ["corner-down-right"] = "rbxassetid://10723415128",
+    ["fast-forward"] = "rbxassetid://10723434557",
+    ["rewind"] = "rbxassetid://10734950020",
+    ["rotate-cw"] = "rbxassetid://10723415128",
+    ["rotate-ccw"] = "rbxassetid://10723434557",
+    ["save"] = "rbxassetid://10734950020",
+    ["printer"] = "rbxassetid://10723415128",
+    ["scissors"] = "rbxassetid://10723434557",
+    ["clipboard"] = "rbxassetid://10734950020",
+    ["align-left"] = "rbxassetid://10723415128",
+    ["align-center"] = "rbxassetid://10723434557",
+    ["align-right"] = "rbxassetid://10734950020",
+    ["align-justify"] = "rbxassetid://10723415128",
+    ["bold"] = "rbxassetid://10723434557",
+    ["italic"] = "rbxassetid://10734950020",
+    ["underline"] = "rbxassetid://10723415128",
+    ["strikethrough"] = "rbxassetid://10723434557",
+    ["edit"] = "rbxassetid://10734950020",
+    ["pen-tool"] = "rbxassetid://10723415128",
+    ["feather"] = "rbxassetid://10723434557",
+    ["anchor-tool"] = "rbxassetid://10734950020",
+    ["crop"] = "rbxassetid://10723415128",
+    ["maximize-2"] = "rbxassetid://10723434557",
+    ["minimize-2"] = "rbxassetid://10734950020",
+    ["move"] = "rbxassetid://10723415128",
+    ["navigation"] = "rbxassetid://10723434557",
+    ["navigation-2"] = "rbxassetid://10734950020",
+    ["globe"] = "rbxassetid://10723415128",
+    ["disc"] = "rbxassetid://10723434557",
+    ["database"] = "rbxassetid://10734950020",
+    ["server"] = "rbxassetid://10723415128",
+    ["hard-drive"] = "rbxassetid://10723434557",
+    ["cpu-chip"] = "rbxassetid://10734950020",
+    ["command"] = "rbxassetid://10723415128",
+    ["aperture"] = "rbxassetid://10723434557",
+    ["figma"] = "rbxassetid://10734950020",
+    ["chrome"] = "rbxassetid://10723415128",
+    ["safari"] = "rbxassetid://10723434557",
+    ["firefox"] = "rbxassetid://10734950020",
+    ["edge"] = "rbxassetid://10723415128",
+    ["opera"] = "rbxassetid://10723434557",
+    ["slack"] = "rbxassetid://10734950020",
+    ["trello"] = "rbxassetid://10723415128",
+    ["twitch"] = "rbxassetid://10723434557",
+    ["youtube"] = "rbxassetid://10734950020",
+    ["twitter"] = "rbxassetid://10723415128",
+    ["facebook"] = "rbxassetid://10723434557",
+    ["instagram"] = "rbxassetid://10734950020",
+    ["linkedin"] = "rbxassetid://10723415128",
+    ["dribbble"] = "rbxassetid://10723434557",
+    ["behance"] = "rbxassetid://10734950020",
+    ["figma-icon"] = "rbxassetid://10723415128",
+    ["sketch"] = "rbxassetid://10723434557",
+    ["invision"] = "rbxassetid://10734950020",
+    ["framer"] = "rbxassetid://10723415128",
+    ["xd"] = "rbxassetid://10723434557",
+    ["after-effects"] = "rbxassetid://10734950020",
+    ["premiere"] = "rbxassetid://10723415128",
+    ["photoshop"] = "rbxassetid://10723434557",
+    ["illustrator"] = "rbxassetid://10734950020",
+    ["indesign"] = "rbxassetid://10723415128",
+    ["lightroom"] = "rbxassetid://10723434557",
+    ["ae"] = "rbxassetid://10734950020",
+    ["pr"] = "rbxassetid://10723415128",
+    ["ps"] = "rbxassetid://10723434557",
+    ["ai"] = "rbxassetid://10734950020",
+    ["id"] = "rbxassetid://10723415128",
+    ["lr"] = "rbxassetid://10723434557",
+    ["au"] = "rbxassetid://10734950020",
+    ["br"] = "rbxassetid://10723415128",
+    ["an"] = "rbxassetid://10723434557",
+    ["dw"] = "rbxassetid://10734950020",
+    ["fw"] = "rbxassetid://10723415128",
+    ["sg"] = "rbxassetid://10723434557",
+    ["pl"] = "rbxassetid://10734950020",
+    ["sc"] = "rbxassetid://10723415128",
+    ["mu"] = "rbxassetid://10723434557",
+    ["ch"] = "rbxassetid://10734950020",
+    ["ic"] = "rbxassetid://10723415128",
+    ["rm"] = "rbxassetid://10723434557",
+    ["dc"] = "rbxassetid://10734950020",
+    ["ac"] = "rbxassetid://10723415128",
+    ["bridge"] = "rbxassetid://10723434557",
+    ["media-encoder"] = "rbxassetid://10734950020",
+    ["prelude"] = "rbxassetid://10723415128",
+    ["character-animator"] = "rbxassetid://10723434557",
+    ["dimension"] = "rbxassetid://10734950020",
+    ["fuse"] = "rbxassetid://10723415128",
+    ["speedgrade"] = "rbxassetid://10723434557",
+    ["story"] = "rbxassetid://10734950020",
+    ["spark"] = "rbxassetid://10723415128",
+    ["capture"] = "rbxassetid://10723434557",
+    ["comp"] = "rbxassetid://10734950020",
+    ["robohelp"] = "rbxassetid://10723415128",
+    ["elearning"] = "rbxassetid://10723434557",
+    ["technical-communication"] = "rbxassetid://10734950020",
+    ["presenter"] = "rbxassetid://10723415128",
+    ["captivate"] = "rbxassetid://10723434557",
+    ["connect"] = "rbxassetid://10734950020",
+    ["campaign"] = "rbxassetid://10723415128",
+    ["experience-manager"] = "rbxassetid://10723434557",
+    ["target"] = "rbxassetid://10734950020",
+    ["audience-manager"] = "rbxassetid://10723415128",
+    ["primetime"] = "rbxassetid://10723434557",
+    ["social"] = "rbxassetid://10734950020",
+    ["spark-page"] = "rbxassetid://10723415128",
+    ["spark-post"] = "rbxassetid://10723434557",
+    ["spark-video"] = "rbxassetid://10734950020",
+    ["portfolio"] = "rbxassetid://10723415128",
+    ["behance-pro"] = "rbxassetid://10723434557",
+    ["stock"] = "rbxassetid://10734950020",
+    ["fonts"] = "rbxassetid://10723415128",
+    ["color"] = "rbxassetid://10723434557",
 }
 
 local function GetIcon(name)
@@ -150,6 +387,8 @@ function CcatUI:Init(config)
     self.Destroyed = false
     self.Tooltips = {}
     self.Notifications = {}
+    self.Minimized = false
+    self.Scale = 1
     
     self.ScreenGui = New("ScreenGui", {
         Name = "CcatUI_" .. tostring(math.random(1000, 9999)),
@@ -286,7 +525,7 @@ function CcatUI:Init(config)
     })
     
     self.WindowButtons = New("Frame", {
-        Size = UDim2.new(0, 80, 1, 0),
+        Size = UDim2.new(0, 120, 1, 0),
         Position = UDim2.new(1, 0, 0, 0),
         AnchorPoint = Vector2.new(1, 0),
         BackgroundTransparency = 1,
@@ -734,6 +973,11 @@ function CcatUI:Init(config)
         self.ScreenGui:Destroy()
         self.NotificationGui:Destroy()
         self.WatermarkGui:Destroy()
+    end
+    
+    function self:SetScale(scale)
+        self.Scale = math.clamp(scale, 0.5, 1.5)
+        Tween(self.UIScale, 0.3, {Scale = self.Scale})
     end
     
     function self:Tab(config)
@@ -1844,6 +2088,496 @@ function CcatUI:Init(config)
                 end)
                 
                 return search
+            end
+            
+            function section:MultiDropdown(config)
+                local dropdown = {}
+                dropdown.Title = config.Title or "Multi Dropdown"
+                dropdown.Options = config.Options or {}
+                dropdown.Default = config.Default or {}
+                dropdown.Callback = config.Callback or function() end
+                dropdown.Opened = false
+                dropdown.Selected = {}
+                
+                for _, v in pairs(dropdown.Default) do
+                    dropdown.Selected[v] = true
+                end
+                
+                dropdown.Frame = New("Frame", {
+                    Size = UDim2.new(1, 0, 0, 0),
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    BackgroundTransparency = 1,
+                    Parent = section.Frame,
+                })
+                
+                local layout = New("UIListLayout", {
+                    Padding = UDim.new(0, 8),
+                    Parent = dropdown.Frame,
+                })
+                
+                local label = New("TextLabel", {
+                    Text = dropdown.Title,
+                    FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
+                    TextSize = 14,
+                    TextColor3 = self.Theme.Text,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 0, 18),
+                    Parent = dropdown.Frame,
+                })
+                
+                dropdown.Button = RoundFrame(10, "Squircle", {
+                    Size = UDim2.new(1, 0, 0, 38),
+                    ImageColor3 = self.Theme.ElementBackground,
+                    ImageTransparency = 0.85,
+                    Parent = dropdown.Frame,
+                })
+                
+                local btnPadding = New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 14),
+                    PaddingRight = UDim.new(0, 14),
+                    Parent = dropdown.Button,
+                })
+                
+                local btnLayout = New("UIListLayout", {
+                    FillDirection = Enum.FillDirection.Horizontal,
+                    VerticalAlignment = Enum.VerticalAlignment.Center,
+                    Parent = dropdown.Button,
+                })
+                
+                dropdown.SelectedLabel = New("TextLabel", {
+                    Text = #dropdown.Default > 0 and table.concat(dropdown.Default, ", ") or "Select...",
+                    FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
+                    TextSize = 14,
+                    TextColor3 = #dropdown.Default > 0 and self.Theme.Text or self.Theme.SecondaryText,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, -24, 1, 0),
+                    Parent = dropdown.Button,
+                })
+                
+                local arrow = New("ImageLabel", {
+                    Size = UDim2.new(0, 18, 0, 18),
+                    BackgroundTransparency = 1,
+                    Image = GetIcon("chevrons-up-down"),
+                    ImageColor3 = self.Theme.SecondaryText,
+                    Parent = dropdown.Button,
+                })
+                
+                dropdown.Menu = RoundFrame(10, "Squircle", {
+                    Size = UDim2.new(1, 0, 0, 0),
+                    Position = UDim2.new(0, 0, 1, 6),
+                    ImageColor3 = self.Theme.Background,
+                    ImageTransparency = 1,
+                    Visible = false,
+                    ZIndex = 10,
+                    Parent = dropdown.Button,
+                })
+                
+                local menuStroke = New("UIStroke", {
+                    Color = self.Theme.Border,
+                    Thickness = 1,
+                    Parent = dropdown.Menu,
+                })
+                
+                local menuPadding = New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 8),
+                    PaddingRight = UDim.new(0, 8),
+                    PaddingTop = UDim.new(0, 8),
+                    PaddingBottom = UDim.new(0, 8),
+                    Parent = dropdown.Menu,
+                })
+                
+                local menuLayout = New("UIListLayout", {
+                    Padding = UDim.new(0, 6),
+                    Parent = dropdown.Menu,
+                })
+                
+                local optionButtons = {}
+                
+                for _, option in pairs(dropdown.Options) do
+                    local optBtn = RoundFrame(8, "Squircle", {
+                        Size = UDim2.new(1, 0, 0, 32),
+                        ImageColor3 = self.Theme.ElementBackground,
+                        ImageTransparency = 1,
+                        Parent = dropdown.Menu,
+                    })
+                    
+                    local optLayout = New("UIListLayout", {
+                        FillDirection = Enum.FillDirection.Horizontal,
+                        Padding = UDim.new(0, 8),
+                        VerticalAlignment = Enum.VerticalAlignment.Center,
+                        Parent = optBtn,
+                    })
+                    
+                    local optPadding = New("UIPadding", {
+                        PaddingLeft = UDim.new(0, 10),
+                        Parent = optBtn,
+                    })
+                    
+                    local checkBox = RoundFrame(4, "Squircle", {
+                        Size = UDim2.new(0, 18, 0, 18),
+                        ImageColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled,
+                        ImageTransparency = 0,
+                        Parent = optBtn,
+                    })
+                    
+                    local checkIcon = New("ImageLabel", {
+                        Size = UDim2.new(0, 12, 0, 12),
+                        Position = UDim2.new(0.5, 0, 0.5, 0),
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        BackgroundTransparency = 1,
+                        Image = GetIcon("check"),
+                        ImageColor3 = Color3.new(1, 1, 1),
+                        ImageTransparency = dropdown.Selected[option] and 0 or 1,
+                        Parent = checkBox,
+                    })
+                    
+                    local optLabel = New("TextLabel", {
+                        Text = option,
+                        FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
+                        TextSize = 13,
+                        TextColor3 = self.Theme.Text,
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, -30, 1, 0),
+                        Parent = optBtn,
+                    })
+                    
+                    local optHitbox = New("TextButton", {
+                        Size = UDim2.new(1, 0, 1, 0),
+                        BackgroundTransparency = 1,
+                        Parent = optBtn,
+                    })
+                    
+                    optHitbox.MouseEnter:Connect(function()
+                        Tween(optBtn, 0.15, {ImageTransparency = 0.85})
+                    end)
+                    
+                    optHitbox.MouseLeave:Connect(function()
+                        Tween(optBtn, 0.15, {ImageTransparency = 1})
+                    end)
+                    
+                    optHitbox.MouseButton1Click:Connect(function()
+                        dropdown.Selected[option] = not dropdown.Selected[option]
+                        Tween(checkBox, 0.2, {ImageColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled})
+                        Tween(checkIcon, 0.2, {ImageTransparency = dropdown.Selected[option] and 0 or 1})
+                        
+                        local selectedList = {}
+                        for opt, selected in pairs(dropdown.Selected) do
+                            if selected then
+                                table.insert(selectedList, opt)
+                            end
+                        end
+                        
+                        dropdown.SelectedLabel.Text = #selectedList > 0 and table.concat(selectedList, ", ") or "Select..."
+                        dropdown.SelectedLabel.TextColor3 = #selectedList > 0 and self.Theme.Text or self.Theme.SecondaryText
+                        
+                        pcall(dropdown.Callback, selectedList)
+                    end)
+                    
+                    optionButtons[option] = {Btn = optBtn, Check = checkBox, Icon = checkIcon}
+                end
+                
+                function dropdown:Open()
+                    dropdown.Opened = true
+                    dropdown.Menu.Visible = true
+                    Tween(arrow, 0.25, {Rotation = 180})
+                    Tween(dropdown.Menu, 0.25, {ImageTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 38 + 16, 200))})
+                end
+                
+                function dropdown:Close()
+                    dropdown.Opened = false
+                    Tween(arrow, 0.25, {Rotation = 0})
+                    Tween(dropdown.Menu, 0.2, {ImageTransparency = 1, Size = UDim2.new(1, 0, 0, 0)})
+                    task.delay(0.2, function()
+                        if not dropdown.Opened then
+                            dropdown.Menu.Visible = false
+                        end
+                    end)
+                end
+                
+                local hitbox = New("TextButton", {
+                    Size = UDim2.new(1, 0, 1, 0),
+                    BackgroundTransparency = 1,
+                    Parent = dropdown.Button,
+                })
+                
+                hitbox.MouseEnter:Connect(function()
+                    Tween(dropdown.Button, 0.2, {ImageTransparency = 0.75})
+                end)
+                
+                hitbox.MouseLeave:Connect(function()
+                    Tween(dropdown.Button, 0.2, {ImageTransparency = 0.85})
+                end)
+                
+                hitbox.MouseButton1Click:Connect(function()
+                    if dropdown.Opened then
+                        dropdown:Close()
+                    else
+                        dropdown:Open()
+                    end
+                end)
+                
+                return dropdown
+            end
+            
+            function section:List(config)
+                local list = {}
+                list.Title = config.Title or "List"
+                list.Options = config.Options or {}
+                list.Default = config.Default
+                list.Callback = config.Callback or function() end
+                
+                list.Frame = New("Frame", {
+                    Size = UDim2.new(1, 0, 0, 0),
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    BackgroundTransparency = 1,
+                    Parent = section.Frame,
+                })
+                
+                local layout = New("UIListLayout", {
+                    Padding = UDim.new(0, 8),
+                    Parent = list.Frame,
+                })
+                
+                local label = New("TextLabel", {
+                    Text = list.Title,
+                    FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
+                    TextSize = 14,
+                    TextColor3 = self.Theme.Text,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 0, 18),
+                    Parent = list.Frame,
+                })
+                
+                list.Container = RoundFrame(10, "Squircle", {
+                    Size = UDim2.new(1, 0, 0, math.min(#list.Options * 36 + 16, 200)),
+                    ImageColor3 = self.Theme.ElementBackground,
+                    ImageTransparency = 0.9,
+                    Parent = list.Frame,
+                })
+                
+                local containerPadding = New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 8),
+                    PaddingRight = UDim.new(0, 8),
+                    PaddingTop = UDim.new(0, 8),
+                    PaddingBottom = UDim.new(0, 8),
+                    Parent = list.Container,
+                })
+                
+                local scrollFrame = New("ScrollingFrame", {
+                    Size = UDim2.new(1, 0, 1, 0),
+                    BackgroundTransparency = 1,
+                    ScrollBarThickness = 2,
+                    ScrollBarImageColor3 = self.Theme.Accent,
+                    ScrollingDirection = Enum.ScrollingDirection.Y,
+                    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                    CanvasSize = UDim2.new(0, 0, 0, 0),
+                    Parent = list.Container,
+                })
+                
+                local scrollLayout = New("UIListLayout", {
+                    Padding = UDim.new(0, 4),
+                    Parent = scrollFrame,
+                })
+                
+                list.Selected = list.Default
+                local optionFrames = {}
+                
+                for _, option in pairs(list.Options) do
+                    local optBtn = RoundFrame(8, "Squircle", {
+                        Size = UDim2.new(1, 0, 0, 32),
+                        ImageColor3 = option == list.Default and self.Theme.Accent or self.Theme.ElementBackground,
+                        ImageTransparency = option == list.Default and 0 or 1,
+                        Parent = scrollFrame,
+                    })
+                    
+                    local optLabel = New("TextLabel", {
+                        Text = option,
+                        FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
+                        TextSize = 13,
+                        TextColor3 = option == list.Default and Color3.new(1, 1, 1) or self.Theme.Text,
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(1, 0, 1, 0),
+                        Parent = optBtn,
+                    })
+                    
+                    local optHitbox = New("TextButton", {
+                        Size = UDim2.new(1, 0, 1, 0),
+                        BackgroundTransparency = 1,
+                        Parent = optBtn,
+                    })
+                    
+                    optHitbox.MouseEnter:Connect(function()
+                        if list.Selected ~= option then
+                            Tween(optBtn, 0.15, {ImageTransparency = 0.85})
+                        end
+                    end)
+                    
+                    optHitbox.MouseLeave:Connect(function()
+                        if list.Selected ~= option then
+                            Tween(optBtn, 0.15, {ImageTransparency = 1})
+                        end
+                    end)
+                    
+                    optHitbox.MouseButton1Click:Connect(function()
+                        if list.Selected then
+                            local prev = optionFrames[list.Selected]
+                            if prev then
+                                Tween(prev.Btn, 0.2, {ImageTransparency = 1, ImageColor3 = self.Theme.ElementBackground})
+                                prev.Label.TextColor3 = self.Theme.Text
+                            end
+                        end
+                        
+                        list.Selected = option
+                        Tween(optBtn, 0.2, {ImageTransparency = 0, ImageColor3 = self.Theme.Accent})
+                        optLabel.TextColor3 = Color3.new(1, 1, 1)
+                        
+                        pcall(list.Callback, option)
+                    end)
+                    
+                    optionFrames[option] = {Btn = optBtn, Label = optLabel}
+                end
+                
+                return list
+            end
+            
+            function section:NumberInput(config)
+                local numInput = {}
+                numInput.Title = config.Title or "Number Input"
+                numInput.Default = config.Default or 0
+                numInput.Min = config.Min or -math.huge
+                numInput.Max = config.Max or math.huge
+                numInput.Step = config.Step or 1
+                numInput.Callback = config.Callback or function() end
+                numInput.Value = numInput.Default
+                
+                numInput.Frame = New("Frame", {
+                    Size = UDim2.new(1, 0, 0, 0),
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                    BackgroundTransparency = 1,
+                    Parent = section.Frame,
+                })
+                
+                local layout = New("UIListLayout", {
+                    Padding = UDim.new(0, 8),
+                    Parent = numInput.Frame,
+                })
+                
+                local label = New("TextLabel", {
+                    Text = numInput.Title,
+                    FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
+                    TextSize = 14,
+                    TextColor3 = self.Theme.Text,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 0, 18),
+                    Parent = numInput.Frame,
+                })
+                
+                local inputContainer = New("Frame", {
+                    Size = UDim2.new(1, 0, 0, 40),
+                    BackgroundTransparency = 1,
+                    Parent = numInput.Frame,
+                })
+                
+                local containerLayout = New("UIListLayout", {
+                    FillDirection = Enum.FillDirection.Horizontal,
+                    Padding = UDim.new(0, 8),
+                    Parent = inputContainer,
+                })
+                
+                local minusBtn = RoundFrame(8, "Squircle", {
+                    Size = UDim2.new(0, 40, 0, 40),
+                    ImageColor3 = self.Theme.ElementBackground,
+                    ImageTransparency = 0.85,
+                    Parent = inputContainer,
+                })
+                
+                local minusIcon = New("ImageLabel", {
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Position = UDim2.new(0.5, 0, 0.5, 0),
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    BackgroundTransparency = 1,
+                    Image = GetIcon("minus"),
+                    ImageColor3 = self.Theme.Text,
+                    Parent = minusBtn,
+                })
+                
+                local minusHitbox = New("TextButton", {
+                    Size = UDim2.new(1, 0, 1, 0),
+                    BackgroundTransparency = 1,
+                    Parent = minusBtn,
+                })
+                
+                numInput.BoxFrame = RoundFrame(10, "Squircle", {
+                    Size = UDim2.new(1, -96, 0, 40),
+                    ImageColor3 = self.Theme.ElementBackground,
+                    ImageTransparency = 0.85,
+                    Parent = inputContainer,
+                })
+                
+                local boxPadding = New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 14),
+                    PaddingRight = UDim.new(0, 14),
+                    Parent = numInput.BoxFrame,
+                })
+                
+                numInput.TextBox = New("TextBox", {
+                    Text = tostring(numInput.Value),
+                    FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
+                    TextSize = 14,
+                    TextColor3 = self.Theme.Text,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 1, 0),
+                    ClearTextOnFocus = false,
+                    Parent = numInput.BoxFrame,
+                })
+                
+                local plusBtn = RoundFrame(8, "Squircle", {
+                    Size = UDim2.new(0, 40, 0, 40),
+                    ImageColor3 = self.Theme.ElementBackground,
+                    ImageTransparency = 0.85,
+                    Parent = inputContainer,
+                })
+                
+                local plusIcon = New("ImageLabel", {
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Position = UDim2.new(0.5, 0, 0.5, 0),
+                    AnchorPoint = Vector2.new(0.5, 0.5),
+                    BackgroundTransparency = 1,
+                    Image = GetIcon("plus"),
+                    ImageColor3 = self.Theme.Text,
+                    Parent = plusBtn,
+                })
+                
+                local plusHitbox = New("TextButton", {
+                    Size = UDim2.new(1, 0, 1, 0),
+                    BackgroundTransparency = 1,
+                    Parent = plusBtn,
+                })
+                
+                function numInput:Set(value)
+                    numInput.Value = math.clamp(value, numInput.Min, numInput.Max)
+                    numInput.TextBox.Text = tostring(numInput.Value)
+                    pcall(numInput.Callback, numInput.Value)
+                end
+                
+                minusHitbox.MouseButton1Click:Connect(function()
+                    numInput:Set(numInput.Value - numInput.Step)
+                end)
+                
+                plusHitbox.MouseButton1Click:Connect(function()
+                    numInput:Set(numInput.Value + numInput.Step)
+                end)
+                
+                numInput.TextBox.FocusLost:Connect(function()
+                    local num = tonumber(numInput.TextBox.Text)
+                    if num then
+                        numInput:Set(num)
+                    else
+                        numInput.TextBox.Text = tostring(numInput.Value)
+                    end
+                end)
+                
+                return numInput
             end
             
             return section
