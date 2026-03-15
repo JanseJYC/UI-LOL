@@ -8,6 +8,7 @@ local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
 local Workspace = game:GetService("Workspace")
 local Camera = Workspace.CurrentCamera
+local StarterGui = game:GetService("StarterGui")
 
 local Icons = loadstring(game:HttpGet("https://raw.githubusercontent.com/JanseJYC/UI-LOL/refs/heads/main/Icons.txt"))()
 
@@ -38,20 +39,18 @@ local function CreateGlassEffect(frame, transparency)
         Size = 24,
         Parent = frame
     })
-    
     local gradient = New("UIGradient", {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
             ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200))
         }),
         Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0.9),
-            NumberSequenceKeypoint.new(1, 0.95)
+            NumberSequenceKeypoint.new(0, transparency or 0.15),
+            NumberSequenceKeypoint.new(1, (transparency or 0.15) + 0.05)
         }),
         Rotation = 45,
         Parent = frame
     })
-    
     return blur, gradient
 end
 
@@ -62,7 +61,7 @@ local function Drag(frame, dragPoints, callback, scaleConstraint)
     local startInputPos = nil
     local startSize = nil
     local isResizing = false
-    
+
     local function update(input)
         if isResizing and scaleConstraint then
             local delta = input.Position - startInputPos
@@ -77,8 +76,9 @@ local function Drag(frame, dragPoints, callback, scaleConstraint)
             frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end
-    
+
     for _, point in pairs(dragPoints or {frame}) do
+        if not point then continue end
         point.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 if scaleConstraint and point == scaleConstraint.ResizeHandle then
@@ -89,31 +89,31 @@ local function Drag(frame, dragPoints, callback, scaleConstraint)
                 startInputPos = input.Position
                 startPos = frame.Position
                 startSize = frame.Size
-                
+
                 input.Changed:Connect(function()
                     if input.UserInputState == Enum.UserInputState.End then
                         dragging = false
                         isResizing = false
                     end
                 end)
-                
+
                 if callback then callback(true) end
             end
         end)
-        
+
         point.InputChanged:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
                 dragInput = input
             end
         end)
     end
-    
+
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and (dragging or isResizing) then
             update(input)
         end
     end)
-    
+
     return {
         Set = function(enabled) dragging = enabled end
     }
@@ -150,25 +150,29 @@ function CcatUI:Init(config)
     self.Notifications = {}
     self.Minimized = false
     self.Scale = 1
-    
+    self.ActiveConnections = {}
+
     self.ScreenGui = New("ScreenGui", {
         Name = "CcatUI_" .. tostring(math.random(1000, 9999)),
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Parent = CoreGui
     })
-    
+
     self.NotificationGui = New("ScreenGui", {
         Name = "CcatUI_Notifications_" .. tostring(math.random(1000, 9999)),
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Parent = CoreGui
     })
-    
+
     self.WatermarkGui = New("ScreenGui", {
-        Name = "CcatUI_Watermark",
+        Name = "CcatUI_Watermark_" .. tostring(math.random(1000, 9999)),
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Parent = CoreGui
     })
-    
+
     self.MainFrame = New("Frame", {
         Size = self.Size,
         Position = self.Position,
@@ -179,26 +183,26 @@ function CcatUI:Init(config)
         Active = true,
         Parent = self.ScreenGui,
     })
-    
+
     CreateGlassEffect(self.MainFrame, self.Theme.GlassTransparency)
-    
+
     New("UICorner", {
         CornerRadius = UDim.new(0, self.UICorner),
         Parent = self.MainFrame,
     })
-    
+
     New("UIStroke", {
         Color = self.Theme.Border,
         Thickness = 1,
         Transparency = 0.4,
         Parent = self.MainFrame,
     })
-    
+
     self.UIScale = New("UIScale", {
         Scale = 1,
         Parent = self.MainFrame,
     })
-    
+
     self.ResizeHandle = New("Frame", {
         Name = "ResizeHandle",
         Size = UDim2.new(0, 20, 0, 20),
@@ -206,15 +210,16 @@ function CcatUI:Init(config)
         BackgroundColor3 = self.Theme.Accent,
         BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
+        ZIndex = 100,
         Parent = self.MainFrame,
     })
-    
+
     New("UICorner", {
         CornerRadius = UDim.new(0, 4),
         Parent = self.ResizeHandle,
     })
-    
-    local resizeIcon = New("ImageLabel", {
+
+    New("ImageLabel", {
         Size = UDim2.new(0, 12, 0, 12),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
@@ -223,14 +228,14 @@ function CcatUI:Init(config)
         ImageColor3 = self.Theme.Text,
         Parent = self.ResizeHandle,
     })
-    
+
     self.Topbar = New("Frame", {
         Name = "Topbar",
         Size = UDim2.new(1, 0, 0, 40),
         BackgroundTransparency = 1,
         Parent = self.MainFrame,
     })
-    
+
     New("UIPadding", {
         PaddingLeft = UDim.new(0, self.UIPadding),
         PaddingRight = UDim.new(0, self.UIPadding),
@@ -238,21 +243,21 @@ function CcatUI:Init(config)
         PaddingBottom = UDim.new(0, 6),
         Parent = self.Topbar,
     })
-    
+
     self.TitleFrame = New("Frame", {
         Size = UDim2.new(0, 0, 1, 0),
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundTransparency = 1,
         Parent = self.Topbar,
     })
-    
+
     New("UIListLayout", {
         FillDirection = Enum.FillDirection.Horizontal,
         Padding = UDim.new(0, 8),
         VerticalAlignment = Enum.VerticalAlignment.Center,
         Parent = self.TitleFrame,
     })
-    
+
     self.IconLabel = New("ImageLabel", {
         Size = UDim2.new(0, 18, 0, 18),
         BackgroundTransparency = 1,
@@ -260,9 +265,9 @@ function CcatUI:Init(config)
         ImageColor3 = self.Theme.Accent,
         Parent = self.TitleFrame,
     })
-    
+
     Tween(self.IconLabel, 0.6, {Rotation = 360}, Enum.EasingStyle.Back)
-    
+
     self.TitleLabel = New("TextLabel", {
         Text = self.Title,
         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold),
@@ -272,7 +277,7 @@ function CcatUI:Init(config)
         AutomaticSize = Enum.AutomaticSize.XY,
         Parent = self.TitleFrame,
     })
-    
+
     self.SubTitleLabel = New("TextLabel", {
         Text = self.SubTitle,
         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -282,7 +287,7 @@ function CcatUI:Init(config)
         AutomaticSize = Enum.AutomaticSize.XY,
         Parent = self.TitleFrame,
     })
-    
+
     self.WindowButtons = New("Frame", {
         Size = UDim2.new(0, 70, 1, 0),
         Position = UDim2.new(1, 0, 0, 0),
@@ -290,7 +295,7 @@ function CcatUI:Init(config)
         BackgroundTransparency = 1,
         Parent = self.Topbar,
     })
-    
+
     New("UIListLayout", {
         FillDirection = Enum.FillDirection.Horizontal,
         Padding = UDim.new(0, 6),
@@ -298,7 +303,7 @@ function CcatUI:Init(config)
         VerticalAlignment = Enum.VerticalAlignment.Center,
         Parent = self.WindowButtons,
     })
-    
+
     local function CreateWindowButton(iconName, color, callback)
         local btn = New("ImageButton", {
             Size = UDim2.new(0, 14, 0, 14),
@@ -307,15 +312,15 @@ function CcatUI:Init(config)
             ImageColor3 = color,
             Parent = self.WindowButtons,
         })
-        
+
         btn.MouseEnter:Connect(function()
             Tween(btn, 0.15, {ImageTransparency = 0.3, Size = UDim2.new(0, 16, 0, 16)})
         end)
-        
+
         btn.MouseLeave:Connect(function()
             Tween(btn, 0.15, {ImageTransparency = 0, Size = UDim2.new(0, 14, 0, 14)})
         end)
-        
+
         btn.MouseButton1Click:Connect(function()
             Tween(btn, 0.1, {Size = UDim2.new(0, 12, 0, 12)})
             task.delay(0.1, function()
@@ -323,18 +328,18 @@ function CcatUI:Init(config)
             end)
             if callback then callback() end
         end)
-        
+
         return btn
     end
-    
+
     self.MinimizeBtn = CreateWindowButton("minus", self.Theme.Warning, function()
         self:Close()
     end)
-    
+
     self.CloseBtn = CreateWindowButton("x", self.Theme.Error, function()
         self:Destroy()
     end)
-    
+
     self.Sidebar = New("Frame", {
         Name = "Sidebar",
         Size = UDim2.new(0, 120, 1, -40),
@@ -342,7 +347,7 @@ function CcatUI:Init(config)
         BackgroundTransparency = 1,
         Parent = self.MainFrame,
     })
-    
+
     New("UIPadding", {
         PaddingLeft = UDim.new(0, self.UIPadding),
         PaddingRight = UDim.new(0, self.UIPadding / 2),
@@ -350,9 +355,9 @@ function CcatUI:Init(config)
         PaddingBottom = UDim.new(0, self.UIPadding),
         Parent = self.Sidebar,
     })
-    
+
     self.TabContainer = New("ScrollingFrame", {
-        Size = UDim2.new(1, 0, 1, 0),
+        Size = UDim2.new(1, 0, 1, -50),
         BackgroundTransparency = 1,
         ScrollBarThickness = 0,
         ScrollingDirection = Enum.ScrollingDirection.Y,
@@ -360,85 +365,102 @@ function CcatUI:Init(config)
         CanvasSize = UDim2.new(0, 0, 0, 0),
         Parent = self.Sidebar,
     })
-    
+
     New("UIListLayout", {
         Padding = UDim.new(0, 5),
         Parent = self.TabContainer,
     })
-    
+
     self.ContentFrame = New("Frame", {
         Name = "Content",
-        Size = UDim2.new(1, -120, 1, -70),
+        Size = UDim2.new(1, -125, 1, -70),
         Position = UDim2.new(0, 120, 0, 40),
         BackgroundTransparency = 1,
         ClipsDescendants = true,
         Parent = self.MainFrame,
     })
-    
+
     New("UIPadding", {
-        PaddingLeft = UDim.new(0, self.UIPadding / 2),
+        PaddingLeft = UDim.new(0, 6),
         PaddingRight = UDim.new(0, self.UIPadding),
         PaddingTop = UDim.new(0, 4),
         PaddingBottom = UDim.new(0, self.UIPadding),
         Parent = self.ContentFrame,
     })
-    
+
+    self.DividerLine = New("Frame", {
+        Name = "DividerLine",
+        Size = UDim2.new(0, 1, 1, -50),
+        Position = UDim2.new(0, 119, 0, 40),
+        BackgroundColor3 = self.Theme.Border,
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        Parent = self.MainFrame,
+    })
+
     self.UserInfoFrame = New("Frame", {
         Name = "UserInfo",
-        Size = UDim2.new(0, 110, 0, 36),
-        Position = UDim2.new(0, 10, 1, -46),
+        Size = UDim2.new(0, 110, 0, 40),
+        Position = UDim2.new(0, 10, 1, -50),
         BackgroundColor3 = self.Theme.ElementBackground,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
         Parent = self.MainFrame,
     })
-    
+
     New("UICorner", {
         CornerRadius = UDim.new(0, 8),
         Parent = self.UserInfoFrame,
     })
-    
+
     New("UIStroke", {
         Color = self.Theme.Border,
         Thickness = 1,
         Transparency = 0.5,
         Parent = self.UserInfoFrame,
     })
-    
+
     local userLayout = New("UIListLayout", {
         FillDirection = Enum.FillDirection.Horizontal,
         Padding = UDim.new(0, 8),
         VerticalAlignment = Enum.VerticalAlignment.Center,
         Parent = self.UserInfoFrame,
     })
-    
+
     New("UIPadding", {
         PaddingLeft = UDim.new(0, 8),
+        PaddingRight = UDim.new(0, 8),
         Parent = self.UserInfoFrame,
     })
-    
+
     local userAvatar = New("ImageLabel", {
-        Size = UDim2.new(0, 24, 0, 24),
+        Size = UDim2.new(0, 28, 0, 28),
         BackgroundColor3 = self.Theme.Border,
         Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=48&h=48",
         Parent = self.UserInfoFrame,
     })
-    
+
     New("UICorner", {
         CornerRadius = UDim.new(1, 0),
         Parent = userAvatar,
     })
-    
+
+    New("UIStroke", {
+        Color = self.Theme.Accent,
+        Thickness = 2,
+        Parent = userAvatar,
+    })
+
     local userName = New("TextLabel", {
         Text = LocalPlayer.Name,
         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
         TextSize = 11,
         TextColor3 = self.Theme.Text,
         BackgroundTransparency = 1,
-        Size = UDim2.new(1, -36, 1, 0),
+        Size = UDim2.new(1, -40, 1, 0),
         Parent = self.UserInfoFrame,
     })
-    
+
     self.DragHandler = Drag(self.MainFrame, {self.Topbar}, nil, {
         ResizeHandle = self.ResizeHandle,
         MinWidth = 300,
@@ -449,17 +471,17 @@ function CcatUI:Init(config)
             self.Size = UDim2.new(0, w, 0, h)
         end
     })
-    
+
     if config.OpenButton ~= false then
         self.OpenButtonFrame = New("Frame", {
-            Size = UDim2.new(0, 100, 0, 34),
+            Size = UDim2.new(0, 140, 0, 40),
             Position = UDim2.new(0, 20, 0, 20),
             BackgroundTransparency = 1,
             Visible = false,
             Active = true,
             Parent = self.ScreenGui,
         })
-        
+
         local openBtnBg = New("Frame", {
             Size = UDim2.new(1, 0, 1, 0),
             BackgroundColor3 = self.Theme.Accent,
@@ -467,71 +489,99 @@ function CcatUI:Init(config)
             BorderSizePixel = 0,
             Parent = self.OpenButtonFrame,
         })
-        
+
         New("UICorner", {
             CornerRadius = UDim.new(0, 8),
             Parent = openBtnBg,
         })
-        
+
         New("UIStroke", {
             Color = Color3.new(1, 1, 1),
             Thickness = 1,
             Transparency = 0.3,
             Parent = openBtnBg,
         })
-        
+
         CreateGlassEffect(openBtnBg, 0.2)
-        
+
+        local searchBtn = New("ImageButton", {
+            Size = UDim2.new(0, 20, 0, 20),
+            Position = UDim2.new(0, 8, 0.5, 0),
+            AnchorPoint = Vector2.new(0, 0.5),
+            BackgroundTransparency = 1,
+            Image = GetIcon("search"),
+            ImageColor3 = Color3.new(1, 1, 1),
+            Parent = openBtnBg,
+        })
+
         local openBtnIcon = New("ImageLabel", {
-            Size = UDim2.new(0, 14, 0, 14),
-            Position = UDim2.new(0, 10, 0.5, 0),
+            Size = UDim2.new(0, 16, 0, 16),
+            Position = UDim2.new(0, 32, 0.5, 0),
             AnchorPoint = Vector2.new(0, 0.5),
             BackgroundTransparency = 1,
             Image = GetIcon("zap"),
             ImageColor3 = Color3.new(1, 1, 1),
             Parent = openBtnBg,
         })
-        
+
         local openBtnText = New("TextLabel", {
             Text = "CcatUI",
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
             TextSize = 12,
             TextColor3 = Color3.new(1, 1, 1),
             BackgroundTransparency = 1,
-            Position = UDim2.new(0, 30, 0, 0),
-            Size = UDim2.new(1, -40, 1, 0),
+            Position = UDim2.new(0, 52, 0, 0),
+            Size = UDim2.new(1, -60, 1, 0),
             Parent = openBtnBg,
         })
-        
+
         local openBtnHitbox = New("TextButton", {
             Size = UDim2.new(1, 0, 1, 0),
             BackgroundTransparency = 1,
             Parent = openBtnBg,
         })
-        
+
         openBtnHitbox.MouseEnter:Connect(function()
             Tween(openBtnBg, 0.2, {BackgroundTransparency = 0.1})
         end)
-        
+
         openBtnHitbox.MouseLeave:Connect(function()
             Tween(openBtnBg, 0.2, {BackgroundTransparency = 0.2})
         end)
-        
+
         openBtnHitbox.MouseButton1Click:Connect(function()
             self:Open()
         end)
-        
+
+        searchBtn.MouseButton1Click:Connect(function()
+            self:Open()
+            task.delay(0.3, function()
+                if self.CurrentTab and self.Tabs[self.CurrentTab] then
+                    local searchSection = self.Tabs[self.CurrentTab].ContentFrame:FindFirstChild("SearchSection")
+                    if searchSection then
+                        local searchBox = searchSection:FindFirstChildOfClass("Frame")
+                        if searchBox then
+                            local textBox = searchBox:FindFirstChildOfClass("TextBox")
+                            if textBox then
+                                textBox:CaptureFocus()
+                            end
+                        end
+                    end
+                end
+            end)
+        end)
+
         Drag(self.OpenButtonFrame, {self.OpenButtonFrame, openBtnBg})
     end
-    
+
     self.WatermarkFrame = New("Frame", {
-        Size = UDim2.new(0, 200, 0, 24),
+        Size = UDim2.new(0, 220, 0, 28),
         Position = UDim2.new(0, 16, 0.02, 0),
         BackgroundTransparency = 1,
         Active = true,
         Parent = self.WatermarkGui,
     })
-    
+
     local watermarkBg = New("Frame", {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundColor3 = Color3.new(0, 0, 0),
@@ -539,35 +589,35 @@ function CcatUI:Init(config)
         BorderSizePixel = 0,
         Parent = self.WatermarkFrame,
     })
-    
+
     New("UICorner", {
         CornerRadius = UDim.new(0, 6),
         Parent = watermarkBg,
     })
-    
+
     New("UIStroke", {
         Color = self.Theme.Accent,
         Thickness = 1,
         Transparency = 0.6,
         Parent = watermarkBg,
     })
-    
+
     CreateGlassEffect(watermarkBg, 0.5)
-    
+
     New("UIPadding", {
-        PaddingLeft = UDim.new(0, 8),
-        PaddingRight = UDim.new(0, 8),
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
         Parent = watermarkBg,
     })
-    
+
     local watermarkLayout = New("UIListLayout", {
         FillDirection = Enum.FillDirection.Horizontal,
-        Padding = UDim.new(0, 8),
+        Padding = UDim.new(0, 10),
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         VerticalAlignment = Enum.VerticalAlignment.Center,
         Parent = watermarkBg,
     })
-    
+
     self.WatermarkTime = New("TextLabel", {
         Text = "00:00:00",
         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -577,7 +627,7 @@ function CcatUI:Init(config)
         AutomaticSize = Enum.AutomaticSize.X,
         Parent = watermarkBg,
     })
-    
+
     self.WatermarkFPS = New("TextLabel", {
         Text = "FPS: 60",
         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -587,7 +637,7 @@ function CcatUI:Init(config)
         AutomaticSize = Enum.AutomaticSize.X,
         Parent = watermarkBg,
     })
-    
+
     self.WatermarkUser = New("TextLabel", {
         Text = "@" .. LocalPlayer.Name,
         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -597,26 +647,32 @@ function CcatUI:Init(config)
         AutomaticSize = Enum.AutomaticSize.X,
         Parent = watermarkBg,
     })
-    
+
     Drag(self.WatermarkFrame, {self.WatermarkFrame, watermarkBg})
-    
-    task.spawn(function()
+
+    local timeConn = task.spawn(function()
         while not self.Destroyed do
             local timeStr = os.date("%H:%M:%S")
-            self.WatermarkTime.Text = timeStr
+            if self.WatermarkTime and self.WatermarkTime.Parent then
+                self.WatermarkTime.Text = timeStr
+            end
             task.wait(1)
         end
     end)
-    
+    table.insert(self.ActiveConnections, {Type = "Task", Value = timeConn})
+
     local fps = 60
     local lastTick = tick()
-    RunService.RenderStepped:Connect(function()
+    local fpsConn = RunService.RenderStepped:Connect(function()
         fps = math.floor(1 / (tick() - lastTick))
         lastTick = tick()
         if fps > 200 then fps = 200 end
-        self.WatermarkFPS.Text = "FPS: " .. fps
+        if self.WatermarkFPS and self.WatermarkFPS.Parent then
+            self.WatermarkFPS.Text = "FPS: " .. fps
+        end
     end)
-    
+    table.insert(self.ActiveConnections, {Type = "Connection", Value = fpsConn})
+
     function self:Notify(data)
         local notifId = #self.Notifications + 1
         local title = data.Title or "Notification"
@@ -624,25 +680,26 @@ function CcatUI:Init(config)
         local duration = data.Duration or 4
         local icon = data.Icon or "info"
         local notifType = data.Type or "info"
-        
+
         local color = self.Theme.Accent
         if notifType == "success" then color = self.Theme.Success
         elseif notifType == "warning" then color = self.Theme.Warning
         elseif notifType == "error" then color = self.Theme.Error end
-        
+
         local offset = 0
         for i, n in pairs(self.Notifications) do
             if n.Active then offset = offset + 1 end
         end
-        
+
         local notifFrame = New("Frame", {
-            Size = UDim2.new(0, 240, 0, 0),
-            Position = UDim2.new(1, 20, 1, -16 - (offset * 60)),
+            Size = UDim2.new(0, 260, 0, 0),
+            Position = UDim2.new(1, 20, 1, -20 - (offset * 75)),
             AnchorPoint = Vector2.new(1, 1),
             BackgroundTransparency = 1,
+            ZIndex = 1000 + offset,
             Parent = self.NotificationGui,
         })
-        
+
         local notifBg = New("Frame", {
             Size = UDim2.new(1, 0, 0, 0),
             AutomaticSize = Enum.AutomaticSize.Y,
@@ -651,81 +708,81 @@ function CcatUI:Init(config)
             BorderSizePixel = 0,
             Parent = notifFrame,
         })
-        
+
         CreateGlassEffect(notifBg, 0.2)
-        
+
         New("UICorner", {
             CornerRadius = UDim.new(0, 10),
             Parent = notifBg,
         })
-        
+
         local notifAccent = New("Frame", {
             Size = UDim2.new(0, 3, 1, 0),
             BackgroundColor3 = color,
             BorderSizePixel = 0,
             Parent = notifBg,
         })
-        
+
         New("UICorner", {
             CornerRadius = UDim.new(0, 10),
             Parent = notifAccent,
         })
-        
+
         New("UIStroke", {
             Color = self.Theme.Border,
             Thickness = 1,
             Transparency = 0.5,
             Parent = notifBg,
         })
-        
+
         New("UIPadding", {
-            PaddingLeft = UDim.new(0, 12),
-            PaddingRight = UDim.new(0, 12),
-            PaddingTop = UDim.new(0, 10),
-            PaddingBottom = UDim.new(0, 10),
+            PaddingLeft = UDim.new(0, 14),
+            PaddingRight = UDim.new(0, 14),
+            PaddingTop = UDim.new(0, 12),
+            PaddingBottom = UDim.new(0, 12),
             Parent = notifBg,
         })
-        
+
         local notifLayout = New("UIListLayout", {
-            Padding = UDim.new(0, 4),
+            Padding = UDim.new(0, 6),
             Parent = notifBg,
         })
-        
+
         local headerFrame = New("Frame", {
-            Size = UDim2.new(1, 0, 0, 18),
+            Size = UDim2.new(1, 0, 0, 20),
             BackgroundTransparency = 1,
             Parent = notifBg,
         })
-        
+
         New("UIListLayout", {
             FillDirection = Enum.FillDirection.Horizontal,
-            Padding = UDim.new(0, 6),
+            Padding = UDim.new(0, 8),
             VerticalAlignment = Enum.VerticalAlignment.Center,
             Parent = headerFrame,
         })
-        
+
         local notifIcon = New("ImageLabel", {
-            Size = UDim2.new(0, 16, 0, 16),
+            Size = UDim2.new(0, 18, 0, 18),
             BackgroundTransparency = 1,
             Image = GetIcon(icon),
             ImageColor3 = color,
             Parent = headerFrame,
         })
-        
+
         local notifTitle = New("TextLabel", {
             Text = title,
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
-            TextSize = 13,
+            TextSize = 14,
             TextColor3 = self.Theme.Text,
             BackgroundTransparency = 1,
-            Size = UDim2.new(1, -22, 1, 0),
+            Size = UDim2.new(1, -26, 1, 0),
             Parent = headerFrame,
         })
-        
+
         local notifContent = New("TextLabel", {
             Text = content,
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
-            TextSize = 11,
+            TextSize = 12,
             TextColor3 = self.Theme.SecondaryText,
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 0, 0),
@@ -733,7 +790,7 @@ function CcatUI:Init(config)
             TextWrapped = true,
             Parent = notifBg,
         })
-        
+
         local progressBar = New("Frame", {
             Size = UDim2.new(1, 0, 0, 2),
             Position = UDim2.new(0, 0, 1, -2),
@@ -741,49 +798,63 @@ function CcatUI:Init(config)
             BorderSizePixel = 0,
             Parent = notifBg,
         })
-        
+
         New("UICorner", {
             CornerRadius = UDim.new(0, 1),
             Parent = progressBar,
         })
-        
-        table.insert(self.Notifications, {Id = notifId, Frame = notifFrame, Active = true})
-        
-        Tween(notifFrame, 0.4, {Position = UDim2.new(1, -16, 1, -16 - (offset * 60))})
+
+        table.insert(self.Notifications, {Id = notifId, Frame = notifFrame, Active = true, Bg = notifBg})
+
+        Tween(notifFrame, 0.4, {Position = UDim2.new(1, -20, 1, -20 - (offset * 75))}, Enum.EasingStyle.Back)
         Tween(progressBar, duration, {Size = UDim2.new(0, 0, 0, 2)}, Enum.EasingStyle.Linear)
-        
-        task.delay(duration, function()
-            Tween(notifFrame, 0.3, {Position = UDim2.new(1, 280, 1, -16 - (offset * 60))}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-            Tween(notifBg, 0.3, {BackgroundTransparency = 1})
-            task.wait(0.3)
-            notifFrame:Destroy()
+
+        local closeConn
+        closeConn = task.delay(duration, function()
             for i, n in pairs(self.Notifications) do
                 if n.Id == notifId then
                     n.Active = false
+                    if n.Frame and n.Frame.Parent then
+                        Tween(n.Frame, 0.3, {Position = UDim2.new(1, 300, n.Frame.Position.Y.Scale, n.Frame.Position.Y.Offset)}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+                        Tween(n.Bg, 0.3, {BackgroundTransparency = 1})
+                    end
+                    task.delay(0.3, function()
+                        if n.Frame then n.Frame:Destroy() end
+                    end)
                 end
             end
+
+            task.delay(0.35, function()
+                local newOffset = 0
+                for i, n in pairs(self.Notifications) do
+                    if n.Active then
+                        Tween(n.Frame, 0.3, {Position = UDim2.new(1, -20, 1, -20 - (newOffset * 75))}, Enum.EasingStyle.Quint)
+                        newOffset = newOffset + 1
+                    end
+                end
+            end)
         end)
     end
-    
+
     function self:Open()
         if self.Destroyed then return end
         self.Closed = false
-        
+
         if self.OpenButtonFrame then
             self.OpenButtonFrame.Visible = false
         end
-        
+
         self.MainFrame.Visible = true
         Tween(self.MainFrame, 0.35, {Size = self.Size}, Enum.EasingStyle.Back)
-        
+
         if self.OnOpen then pcall(self.OnOpen) end
     end
-    
+
     function self:Close()
         self.Closed = true
-        
+
         Tween(self.MainFrame, 0.3, {Size = UDim2.new(0, self.Size.X.Offset * 0.9, 0, self.Size.Y.Offset * 0.9)})
-        
+
         task.delay(0.3, function()
             if self.Closed and not self.Destroyed then
                 self.MainFrame.Visible = false
@@ -792,67 +863,77 @@ function CcatUI:Init(config)
                 end
             end
         end)
-        
+
         if self.OnClose then pcall(self.OnClose) end
     end
-    
+
     function self:Destroy()
         self.Destroyed = true
+
+        for _, conn in pairs(self.ActiveConnections) do
+            if conn.Type == "Connection" and conn.Value then
+                pcall(function() conn.Value:Disconnect() end)
+            end
+        end
+
         Tween(self.MainFrame, 0.2, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back, Enum.EasingDirection.In)
         Tween(self.WatermarkFrame, 0.2, {Position = UDim2.new(0, -300, 0.02, 0)})
+
         task.wait(0.2)
-        self.ScreenGui:Destroy()
-        self.NotificationGui:Destroy()
-        self.WatermarkGui:Destroy()
+
+        pcall(function() self.ScreenGui:Destroy() end)
+        pcall(function() self.NotificationGui:Destroy() end)
+        pcall(function() self.WatermarkGui:Destroy() end)
     end
-    
+
     function self:SetScale(scale)
         self.Scale = math.clamp(scale, 0.5, 1.5)
         Tween(self.UIScale, 0.3, {Scale = self.Scale})
     end
-    
+
     function self:Tab(config)
         local tab = {}
         tab.Name = config.Name or "Tab"
         tab.Icon = config.Icon or "home"
         tab.Elements = {}
         tab.Theme = self.Theme
-        
+        tab.ParentUI = self
+
         tab.ButtonFrame = New("Frame", {
-            Size = UDim2.new(1, 0, 0, 32),
+            Size = UDim2.new(1, 0, 0, 34),
             BackgroundColor3 = self.Theme.ElementBackground,
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
             Parent = self.TabContainer,
         })
-        
+
         New("UICorner", {
             CornerRadius = UDim.new(0, 8),
             Parent = tab.ButtonFrame,
         })
-        
+
         New("UIPadding", {
             PaddingLeft = UDim.new(0, 10),
             PaddingRight = UDim.new(0, 10),
             Parent = tab.ButtonFrame,
         })
-        
+
         local btnLayout = New("UIListLayout", {
             FillDirection = Enum.FillDirection.Horizontal,
             Padding = UDim.new(0, 8),
             VerticalAlignment = Enum.VerticalAlignment.Center,
             Parent = tab.ButtonFrame,
         })
-        
+
         local icon = New("ImageLabel", {
-            Size = UDim2.new(0, 16, 0, 16),
+            Size = UDim2.new(0, 18, 0, 18),
             BackgroundTransparency = 1,
             Image = GetIcon(tab.Icon),
             ImageColor3 = self.Theme.SecondaryText,
             ImageTransparency = 0.4,
             Parent = tab.ButtonFrame,
         })
-        
+
         local label = New("TextLabel", {
             Text = tab.Name,
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -860,10 +941,10 @@ function CcatUI:Init(config)
             TextColor3 = self.Theme.SecondaryText,
             TextTransparency = 0.4,
             BackgroundTransparency = 1,
-            Size = UDim2.new(1, -24, 1, 0),
+            Size = UDim2.new(1, -26, 1, 0),
             Parent = tab.ButtonFrame,
         })
-        
+
         tab.ContentFrame = New("ScrollingFrame", {
             Size = UDim2.new(1, 0, 1, 0),
             BackgroundTransparency = 1,
@@ -875,7 +956,7 @@ function CcatUI:Init(config)
             Visible = false,
             Parent = self.ContentFrame,
         })
-        
+
         New("UIPadding", {
             PaddingLeft = UDim.new(0, 4),
             PaddingRight = UDim.new(0, 4),
@@ -883,15 +964,15 @@ function CcatUI:Init(config)
             PaddingBottom = UDim.new(0, 4),
             Parent = tab.ContentFrame,
         })
-        
+
         New("UIListLayout", {
-            Padding = UDim.new(0, 10),
+            Padding = UDim.new(0, 12),
             Parent = tab.ContentFrame,
         })
-        
+
         function tab:Select()
-            if self.CurrentTab and self.Tabs[self.CurrentTab] then
-                local current = self.Tabs[self.CurrentTab]
+            if self.ParentUI.CurrentTab and self.ParentUI.Tabs[self.ParentUI.CurrentTab] then
+                local current = self.ParentUI.Tabs[self.ParentUI.CurrentTab]
                 Tween(current.ButtonFrame, 0.25, {BackgroundTransparency = 1})
                 for _, child in pairs(current.ButtonFrame:GetChildren()) do
                     if child:IsA("ImageLabel") then
@@ -902,44 +983,46 @@ function CcatUI:Init(config)
                 end
                 current.ContentFrame.Visible = false
             end
-            
-            self.CurrentTab = tab.Name
+
+            self.ParentUI.CurrentTab = tab.Name
             Tween(tab.ButtonFrame, 0.25, {BackgroundTransparency = 0.85})
             Tween(icon, 0.25, {ImageTransparency = 0, ImageColor3 = self.Theme.Accent})
             Tween(label, 0.25, {TextTransparency = 0, TextColor3 = self.Theme.Text})
             tab.ContentFrame.Visible = true
-            
+
             Tween(tab.ContentFrame, 0.3, {CanvasPosition = Vector2.new(0, 0)})
         end
-        
+
         tab.ButtonFrame.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 tab:Select()
             end
         end)
-        
+
         tab.ButtonFrame.MouseEnter:Connect(function()
-            if self.CurrentTab ~= tab.Name then
+            if self.ParentUI.CurrentTab ~= tab.Name then
                 Tween(tab.ButtonFrame, 0.2, {BackgroundTransparency = 0.92})
                 Tween(icon, 0.2, {ImageTransparency = 0.2})
                 Tween(label, 0.2, {TextTransparency = 0.2})
             end
         end)
-        
+
         tab.ButtonFrame.MouseLeave:Connect(function()
-            if self.CurrentTab ~= tab.Name then
+            if self.ParentUI.CurrentTab ~= tab.Name then
                 Tween(tab.ButtonFrame, 0.2, {BackgroundTransparency = 1})
                 Tween(icon, 0.2, {ImageTransparency = 0.4})
                 Tween(label, 0.2, {TextTransparency = 0.4})
             end
         end)
-        
+
         function tab:Section(config)
             local section = {}
             section.Name = config.Name or "Section"
             section.Theme = self.Theme
-            
+            section.ParentTab = tab
+
             section.Frame = New("Frame", {
+                Name = section.Name .. "Section",
                 Size = UDim2.new(1, 0, 0, 0),
                 AutomaticSize = Enum.AutomaticSize.Y,
                 BackgroundColor3 = self.Theme.ElementBackground,
@@ -947,12 +1030,12 @@ function CcatUI:Init(config)
                 BorderSizePixel = 0,
                 Parent = tab.ContentFrame,
             })
-            
+
             New("UICorner", {
                 CornerRadius = UDim.new(0, 10),
                 Parent = section.Frame,
             })
-            
+
             New("UIPadding", {
                 PaddingLeft = UDim.new(0, 12),
                 PaddingRight = UDim.new(0, 12),
@@ -960,12 +1043,12 @@ function CcatUI:Init(config)
                 PaddingBottom = UDim.new(0, 12),
                 Parent = section.Frame,
             })
-            
+
             New("UIListLayout", {
-                Padding = UDim.new(0, 8),
+                Padding = UDim.new(0, 10),
                 Parent = section.Frame,
             })
-            
+
             local header = New("TextLabel", {
                 Text = section.Name,
                 FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold),
@@ -975,24 +1058,24 @@ function CcatUI:Init(config)
                 Size = UDim2.new(1, 0, 0, 18),
                 Parent = section.Frame,
             })
-            
+
             function section:Paragraph(config)
                 local para = {}
                 para.Title = config.Title or ""
                 para.Content = config.Content or ""
-                
+
                 para.Frame = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 4),
                     Parent = para.Frame,
                 })
-                
+
                 if para.Title ~= "" then
                     local title = New("TextLabel", {
                         Text = para.Title,
@@ -1004,7 +1087,7 @@ function CcatUI:Init(config)
                         Parent = para.Frame,
                     })
                 end
-                
+
                 local content = New("TextLabel", {
                     Text = para.Content,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -1016,10 +1099,10 @@ function CcatUI:Init(config)
                     TextWrapped = true,
                     Parent = para.Frame,
                 })
-                
+
                 return para
             end
-            
+
             function section:Divider()
                 local divider = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 1),
@@ -1030,33 +1113,35 @@ function CcatUI:Init(config)
                 })
                 return divider
             end
-            
+
             function section:Button(config)
                 local btn = {}
                 btn.Title = config.Title or "Button"
                 btn.Callback = config.Callback or function() end
-                
+                btn.Holding = false
+
                 btn.Frame = New("TextButton", {
-                    Size = UDim2.new(1, 0, 0, 32),
+                    Size = UDim2.new(1, 0, 0, 34),
                     BackgroundColor3 = self.Theme.Accent,
                     BackgroundTransparency = 0.2,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = section.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = btn.Frame,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = btn.Frame,
                 })
-                
+
                 local btnLabel = New("TextLabel", {
                     Text = btn.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -1066,102 +1151,110 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 1, 0),
                     Parent = btn.Frame,
                 })
-                
+
                 btn.Frame.MouseEnter:Connect(function()
-                    Tween(btn.Frame, 0.2, {BackgroundTransparency = 0.1, Size = UDim2.new(1, 0, 0, 34)})
+                    Tween(btn.Frame, 0.2, {BackgroundTransparency = 0.1, Size = UDim2.new(1, 0, 0, 36)})
                 end)
-                
+
                 btn.Frame.MouseLeave:Connect(function()
-                    Tween(btn.Frame, 0.2, {BackgroundTransparency = 0.2, Size = UDim2.new(1, 0, 0, 32)})
+                    btn.Holding = false
+                    Tween(btn.Frame, 0.2, {BackgroundTransparency = 0.2, Size = UDim2.new(1, 0, 0, 34)})
                 end)
-                
-                btn.Frame.MouseButton1Down:Connect(function()
-                    Tween(btn.Frame, 0.1, {Size = UDim2.new(0.98, 0, 0, 30)})
+
+                btn.Frame.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        btn.Holding = true
+                        Tween(btn.Frame, 0.1, {Size = UDim2.new(0.98, 0, 0, 32)})
+                    end
                 end)
-                
-                btn.Frame.MouseButton1Up:Connect(function()
-                    Tween(btn.Frame, 0.15, {Size = UDim2.new(1, 0, 0, 32)}, Enum.EasingStyle.Back)
+
+                btn.Frame.InputEnded:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        btn.Holding = false
+                        Tween(btn.Frame, 0.15, {Size = UDim2.new(1, 0, 0, 34)}, Enum.EasingStyle.Back)
+                    end
                 end)
-                
+
                 btn.Frame.MouseButton1Click:Connect(function()
                     pcall(btn.Callback)
                 end)
-                
+
                 return btn
             end
-            
+
             function section:Toggle(config)
                 local toggle = {}
                 toggle.Title = config.Title or "Toggle"
                 toggle.Default = config.Default or false
                 toggle.Callback = config.Callback or function() end
                 toggle.Value = toggle.Default
-                
+
                 toggle.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 32),
+                    Size = UDim2.new(1, 0, 0, 34),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 10),
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                     Parent = toggle.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = toggle.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
                     TextSize = 12,
                     TextColor3 = self.Theme.Text,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(1, -48, 1, 0),
+                    Size = UDim2.new(1, -52, 1, 0),
                     Parent = toggle.Frame,
                 })
-                
+
                 toggle.SwitchFrame = New("TextButton", {
-                    Size = UDim2.new(0, 44, 0, 22),
+                    Size = UDim2.new(0, 48, 0, 24),
                     BackgroundColor3 = toggle.Default and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = toggle.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(1, 0),
                     Parent = toggle.SwitchFrame,
                 })
-                
+
                 toggle.Thumb = New("Frame", {
-                    Size = UDim2.new(0, 16, 0, 16),
-                    Position = toggle.Default and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, 3, 0.5, 0),
+                    Size = UDim2.new(0, 18, 0, 18),
+                    Position = toggle.Default and UDim2.new(1, -21, 0.5, 0) or UDim2.new(0, 3, 0.5, 0),
                     AnchorPoint = Vector2.new(0, 0.5),
                     BackgroundColor3 = Color3.new(1, 1, 1),
                     BorderSizePixel = 0,
                     Parent = toggle.SwitchFrame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(1, 0),
                     Parent = toggle.Thumb,
                 })
-                
+
                 function toggle:Set(value)
                     toggle.Value = value
                     Tween(toggle.SwitchFrame, 0.25, {BackgroundColor3 = value and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled})
-                    Tween(toggle.Thumb, 0.25, {Position = value and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, 3, 0.5, 0)})
+                    Tween(toggle.Thumb, 0.25, {Position = value and UDim2.new(1, -21, 0.5, 0) or UDim2.new(0, 3, 0.5, 0)})
                     pcall(toggle.Callback, value)
                 end
-                
+
                 toggle.SwitchFrame.MouseButton1Click:Connect(function()
                     toggle:Set(not toggle.Value)
                 end)
-                
+
                 return toggle
             end
-            
+
             function section:Slider(config)
                 local slider = {}
                 slider.Title = config.Title or "Slider"
@@ -1172,64 +1265,66 @@ function CcatUI:Init(config)
                 slider.Suffix = config.Suffix or ""
                 slider.Callback = config.Callback or function() end
                 slider.Value = slider.Default
-                
+                slider.Dragging = false
+
                 slider.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 46),
+                    Size = UDim2.new(1, 0, 0, 50),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
-                    Padding = UDim.new(0, 6),
+                    Padding = UDim.new(0, 8),
                     Parent = slider.Frame,
                 })
-                
+
                 local header = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 16),
+                    Size = UDim2.new(1, 0, 0, 18),
                     BackgroundTransparency = 1,
                     Parent = slider.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Parent = header,
                 })
-                
+
                 local title = New("TextLabel", {
                     Text = slider.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
                     TextSize = 12,
                     TextColor3 = self.Theme.Text,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(1, -50, 1, 0),
+                    Size = UDim2.new(1, -60, 1, 0),
                     Parent = header,
                 })
-                
+
                 local valueLabel = New("TextLabel", {
                     Text = tostring(slider.Value) .. slider.Suffix,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold),
                     TextSize = 12,
                     TextColor3 = self.Theme.Accent,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(0, 50, 1, 0),
+                    Size = UDim2.new(0, 60, 1, 0),
                     Parent = header,
                 })
-                
+
                 slider.Track = New("TextButton", {
-                    Size = UDim2.new(1, 0, 0, 6),
+                    Size = UDim2.new(1, 0, 0, 8),
                     BackgroundColor3 = self.Theme.ToggleDisabled,
                     BackgroundTransparency = 0.4,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = slider.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(1, 0),
                     Parent = slider.Track,
                 })
-                
+
                 local percent = (slider.Value - slider.Min) / (slider.Max - slider.Min)
                 slider.Fill = New("Frame", {
                     Size = UDim2.new(percent, 0, 1, 0),
@@ -1237,28 +1332,35 @@ function CcatUI:Init(config)
                     BorderSizePixel = 0,
                     Parent = slider.Track,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(1, 0),
                     Parent = slider.Fill,
                 })
-                
-                slider.Thumb = New("Frame", {
-                    Size = UDim2.new(0, 14, 0, 14),
+
+                slider.Thumb = New("TextButton", {
+                    Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(percent, 0, 0.5, 0),
                     AnchorPoint = Vector2.new(0.5, 0.5),
                     BackgroundColor3 = Color3.new(1, 1, 1),
                     BorderSizePixel = 0,
+                    Text = "",
+                    AutoButtonColor = false,
+                    ZIndex = 2,
                     Parent = slider.Fill,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(1, 0),
                     Parent = slider.Thumb,
                 })
-                
-                local dragging = false
-                
+
+                New("UIStroke", {
+                    Color = self.Theme.Border,
+                    Thickness = 1,
+                    Parent = slider.Thumb,
+                })
+
                 local function update(input)
                     local pos = math.clamp((input.Position.X - slider.Track.AbsolutePosition.X) / slider.Track.AbsoluteSize.X, 0, 1)
                     local value = math.floor((pos * (slider.Max - slider.Min) + slider.Min) / slider.Step) * slider.Step
@@ -1268,31 +1370,40 @@ function CcatUI:Init(config)
                     slider.Thumb.Position = UDim2.new(pos, 0, 0.5, 0)
                     pcall(slider.Callback, value)
                 end
-                
+
                 slider.Track.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        dragging = true
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        slider.Dragging = true
                         update(input)
-                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 18, 0, 18)})
+                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 20, 0, 20)})
                     end
                 end)
-                
-                UserInputService.InputChanged:Connect(function(input)
-                    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+
+                slider.Thumb.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        slider.Dragging = true
+                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 20, 0, 20)})
+                    end
+                end)
+
+                local inputChangedConn = UserInputService.InputChanged:Connect(function(input)
+                    if slider.Dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                         update(input)
                     end
                 end)
-                
-                UserInputService.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        dragging = false
-                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 14, 0, 14)})
+                table.insert(self.ParentTab.ParentUI.ActiveConnections, {Type = "Connection", Value = inputChangedConn})
+
+                local inputEndedConn = UserInputService.InputEnded:Connect(function(input)
+                    if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and slider.Dragging then
+                        slider.Dragging = false
+                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 16, 0, 16)})
                     end
                 end)
-                
+                table.insert(self.ParentTab.ParentUI.ActiveConnections, {Type = "Connection", Value = inputEndedConn})
+
                 return slider
             end
-            
+
             function section:Dropdown(config)
                 local dropdown = {}
                 dropdown.Title = config.Title or "Dropdown"
@@ -1300,19 +1411,19 @@ function CcatUI:Init(config)
                 dropdown.Default = config.Default
                 dropdown.Callback = config.Callback or function() end
                 dropdown.Opened = false
-                
+
                 dropdown.Frame = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = dropdown.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = dropdown.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -1322,34 +1433,35 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 0, 16),
                     Parent = dropdown.Frame,
                 })
-                
+
                 dropdown.Button = New("TextButton", {
-                    Size = UDim2.new(1, 0, 0, 32),
+                    Size = UDim2.new(1, 0, 0, 34),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.85,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = dropdown.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = dropdown.Button,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = dropdown.Button,
                 })
-                
+
                 local btnLayout = New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                     Parent = dropdown.Button,
                 })
-                
+
                 dropdown.SelectedLabel = New("TextLabel", {
                     Text = dropdown.Default or "Select...",
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -1359,7 +1471,7 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, -22, 1, 0),
                     Parent = dropdown.Button,
                 })
-                
+
                 local arrow = New("ImageLabel", {
                     Size = UDim2.new(0, 16, 0, 16),
                     BackgroundTransparency = 1,
@@ -1367,7 +1479,7 @@ function CcatUI:Init(config)
                     ImageColor3 = self.Theme.SecondaryText,
                     Parent = dropdown.Button,
                 })
-                
+
                 dropdown.Menu = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     Position = UDim2.new(0, 0, 1, 4),
@@ -1378,18 +1490,18 @@ function CcatUI:Init(config)
                     ZIndex = 10,
                     Parent = dropdown.Button,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = dropdown.Menu,
                 })
-                
+
                 New("UIStroke", {
                     Color = self.Theme.Border,
                     Thickness = 1,
                     Parent = dropdown.Menu,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 6),
                     PaddingRight = UDim.new(0, 6),
@@ -1397,28 +1509,29 @@ function CcatUI:Init(config)
                     PaddingBottom = UDim.new(0, 6),
                     Parent = dropdown.Menu,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 4),
                     Parent = dropdown.Menu,
                 })
-                
+
                 for _, option in pairs(dropdown.Options) do
                     local optBtn = New("TextButton", {
-                        Size = UDim2.new(1, 0, 0, 26),
+                        Size = UDim2.new(1, 0, 0, 28),
                         BackgroundColor3 = self.Theme.ElementBackground,
                         BackgroundTransparency = 1,
                         BorderSizePixel = 0,
                         Text = "",
                         AutoButtonColor = false,
+                        ZIndex = 11,
                         Parent = dropdown.Menu,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 6),
                         Parent = optBtn,
                     })
-                    
+
                     local optLabel = New("TextLabel", {
                         Text = option,
                         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -1428,15 +1541,15 @@ function CcatUI:Init(config)
                         Size = UDim2.new(1, 0, 1, 0),
                         Parent = optBtn,
                     })
-                    
+
                     optBtn.MouseEnter:Connect(function()
                         Tween(optBtn, 0.15, {BackgroundTransparency = 0.85})
                     end)
-                    
+
                     optBtn.MouseLeave:Connect(function()
                         Tween(optBtn, 0.15, {BackgroundTransparency = 1})
                     end)
-                    
+
                     optBtn.MouseButton1Click:Connect(function()
                         dropdown.SelectedLabel.Text = option
                         dropdown.SelectedLabel.TextColor3 = self.Theme.Text
@@ -1444,14 +1557,14 @@ function CcatUI:Init(config)
                         pcall(dropdown.Callback, option)
                     end)
                 end
-                
+
                 function dropdown:Open()
                     dropdown.Opened = true
                     dropdown.Menu.Visible = true
                     Tween(arrow, 0.25, {Rotation = 180})
-                    Tween(dropdown.Menu, 0.25, {BackgroundTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 30 + 12, 160))})
+                    Tween(dropdown.Menu, 0.25, {BackgroundTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 32 + 12, 180))})
                 end
-                
+
                 function dropdown:Close()
                     dropdown.Opened = false
                     Tween(arrow, 0.25, {Rotation = 0})
@@ -1462,15 +1575,15 @@ function CcatUI:Init(config)
                         end
                     end)
                 end
-                
+
                 dropdown.Button.MouseEnter:Connect(function()
                     Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.75})
                 end)
-                
+
                 dropdown.Button.MouseLeave:Connect(function()
                     Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.85})
                 end)
-                
+
                 dropdown.Button.MouseButton1Click:Connect(function()
                     if dropdown.Opened then
                         dropdown:Close()
@@ -1478,29 +1591,29 @@ function CcatUI:Init(config)
                         dropdown:Open()
                     end
                 end)
-                
+
                 return dropdown
             end
-            
+
             function section:Input(config)
                 local input = {}
                 input.Title = config.Title or "Input"
                 input.Default = config.Default or ""
                 input.Placeholder = config.Placeholder or "Enter text..."
                 input.Callback = config.Callback or function() end
-                
+
                 input.Frame = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = input.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = input.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -1510,26 +1623,26 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 0, 16),
                     Parent = input.Frame,
                 })
-                
+
                 input.BoxFrame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 34),
+                    Size = UDim2.new(1, 0, 0, 36),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.85,
                     BorderSizePixel = 0,
                     Parent = input.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = input.BoxFrame,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = input.BoxFrame,
                 })
-                
+
                 input.TextBox = New("TextBox", {
                     Text = input.Default,
                     PlaceholderText = input.Placeholder,
@@ -1542,64 +1655,65 @@ function CcatUI:Init(config)
                     ClearTextOnFocus = false,
                     Parent = input.BoxFrame,
                 })
-                
+
                 input.TextBox.Focused:Connect(function()
                     Tween(input.BoxFrame, 0.2, {BackgroundTransparency = 0.7, BackgroundColor3 = self.Theme.Hover})
                 end)
-                
+
                 input.TextBox.FocusLost:Connect(function(enterPressed)
                     Tween(input.BoxFrame, 0.2, {BackgroundTransparency = 0.85, BackgroundColor3 = self.Theme.ElementBackground})
                     pcall(input.Callback, input.TextBox.Text, enterPressed)
                 end)
-                
+
                 return input
             end
-            
+
             function section:Keybind(config)
                 local keybind = {}
                 keybind.Title = config.Title or "Keybind"
                 keybind.Default = config.Default or Enum.KeyCode.Unknown
                 keybind.Callback = config.Callback or function() end
                 keybind.Value = keybind.Default
-                
+
                 keybind.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 32),
+                    Size = UDim2.new(1, 0, 0, 34),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 10),
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                     Parent = keybind.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = keybind.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
                     TextSize = 12,
                     TextColor3 = self.Theme.Text,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(1, -60, 1, 0),
+                    Size = UDim2.new(1, -70, 1, 0),
                     Parent = keybind.Frame,
                 })
-                
+
                 keybind.Button = New("TextButton", {
-                    Size = UDim2.new(0, 60, 0, 26),
+                    Size = UDim2.new(0, 70, 0, 28),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.85,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = keybind.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 6),
                     Parent = keybind.Button,
                 })
-                
+
                 local keyLabel = New("TextLabel", {
                     Text = keybind.Default.Name ~= "Unknown" and keybind.Default.Name or "None",
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -1609,16 +1723,16 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 1, 0),
                     Parent = keybind.Button,
                 })
-                
+
                 local listening = false
-                
+
                 keybind.Button.MouseButton1Click:Connect(function()
                     if listening then return end
                     listening = true
                     keyLabel.Text = "..."
                     Tween(keybind.Button, 0.2, {BackgroundTransparency = 0.6, BackgroundColor3 = self.Theme.Accent})
                     keyLabel.TextColor3 = Color3.new(0, 0, 0)
-                    
+
                     local connection
                     connection = UserInputService.InputBegan:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.Keyboard then
@@ -1632,76 +1746,77 @@ function CcatUI:Init(config)
                         end
                     end)
                 end)
-                
+
                 keybind.Button.MouseEnter:Connect(function()
                     if not listening then
                         Tween(keybind.Button, 0.2, {BackgroundTransparency = 0.75})
                     end
                 end)
-                
+
                 keybind.Button.MouseLeave:Connect(function()
                     if not listening then
                         Tween(keybind.Button, 0.2, {BackgroundTransparency = 0.85})
                     end
                 end)
-                
+
                 return keybind
             end
-            
+
             function section:ColorPicker(config)
                 local picker = {}
                 picker.Title = config.Title or "Color Picker"
                 picker.Default = config.Default or Color3.fromRGB(138, 43, 226)
                 picker.Callback = config.Callback or function() end
                 picker.Value = picker.Default
-                
+
                 picker.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 32),
+                    Size = UDim2.new(1, 0, 0, 34),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 10),
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                     Parent = picker.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = picker.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
                     TextSize = 12,
                     TextColor3 = self.Theme.Text,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(1, -44, 1, 0),
+                    Size = UDim2.new(1, -50, 1, 0),
                     Parent = picker.Frame,
                 })
-                
+
                 picker.Display = New("TextButton", {
-                    Size = UDim2.new(0, 36, 0, 24),
+                    Size = UDim2.new(0, 44, 0, 28),
                     BackgroundColor3 = picker.Default,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = picker.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 6),
                     Parent = picker.Display,
                 })
-                
+
                 New("UIStroke", {
                     Color = self.Theme.Border,
                     Thickness = 1,
                     Parent = picker.Display,
                 })
-                
+
                 local pickerOpen = false
                 local pickerFrame = nil
                 local hue, sat, val = Color3.toHSV(picker.Default)
-                
+
                 picker.Display.MouseButton1Click:Connect(function()
                     if pickerOpen then
                         if pickerFrame then
@@ -1713,7 +1828,7 @@ function CcatUI:Init(config)
                         pickerOpen = false
                         return
                     end
-                    
+
                     pickerOpen = true
                     pickerFrame = New("Frame", {
                         Size = UDim2.new(1, 0, 0, 0),
@@ -1723,7 +1838,7 @@ function CcatUI:Init(config)
                         ClipsDescendants = true,
                         Parent = picker.Frame,
                     })
-                    
+
                     local pickerBg = New("Frame", {
                         Size = UDim2.new(1, 0, 1, 0),
                         BackgroundColor3 = self.Theme.ElementBackground,
@@ -1731,12 +1846,12 @@ function CcatUI:Init(config)
                         BorderSizePixel = 0,
                         Parent = pickerFrame,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 10),
                         Parent = pickerBg,
                     })
-                    
+
                     New("UIPadding", {
                         PaddingLeft = UDim.new(0, 10),
                         PaddingRight = UDim.new(0, 10),
@@ -1744,26 +1859,27 @@ function CcatUI:Init(config)
                         PaddingBottom = UDim.new(0, 10),
                         Parent = pickerBg,
                     })
-                    
+
                     local pickerLayout = New("UIListLayout", {
                         Padding = UDim.new(0, 8),
                         Parent = pickerBg,
                     })
-                    
+
                     local satValFrame = New("TextButton", {
                         Size = UDim2.new(1, 0, 0, 80),
                         BackgroundColor3 = Color3.fromHSV(hue, 1, 1),
                         BorderSizePixel = 0,
                         Text = "",
                         AutoButtonColor = false,
+                        Active = true,
                         Parent = pickerBg,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 8),
                         Parent = satValFrame,
                     })
-                    
+
                     local satGradient = New("UIGradient", {
                         Color = ColorSequence.new({
                             ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
@@ -1771,13 +1887,13 @@ function CcatUI:Init(config)
                         }),
                         Parent = satValFrame,
                     })
-                    
+
                     local valFrame = New("Frame", {
                         Size = UDim2.new(1, 0, 1, 0),
                         BackgroundTransparency = 1,
                         Parent = satValFrame,
                     })
-                    
+
                     local valGradient = New("UIGradient", {
                         Color = ColorSequence.new({
                             ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
@@ -1790,7 +1906,7 @@ function CcatUI:Init(config)
                         Rotation = 90,
                         Parent = valFrame,
                     })
-                    
+
                     local pickerCursor = New("Frame", {
                         Size = UDim2.new(0, 12, 0, 12),
                         Position = UDim2.new(sat, 0, 1 - val, 0),
@@ -1799,32 +1915,33 @@ function CcatUI:Init(config)
                         BorderSizePixel = 0,
                         Parent = satValFrame,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(1, 0),
                         Parent = pickerCursor,
                     })
-                    
+
                     New("UIStroke", {
                         Color = Color3.new(0, 0, 0),
                         Thickness = 2,
                         Parent = pickerCursor,
                     })
-                    
+
                     local hueSlider = New("TextButton", {
                         Size = UDim2.new(1, 0, 0, 14),
                         BackgroundColor3 = Color3.new(1, 1, 1),
                         BorderSizePixel = 0,
                         Text = "",
                         AutoButtonColor = false,
+                        Active = true,
                         Parent = pickerBg,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 8),
                         Parent = hueSlider,
                     })
-                    
+
                     local hueGradient = New("UIGradient", {
                         Color = ColorSequence.new({
                             ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
@@ -1837,7 +1954,7 @@ function CcatUI:Init(config)
                         }),
                         Parent = hueSlider,
                     })
-                    
+
                     local hueCursor = New("Frame", {
                         Size = UDim2.new(0, 8, 1, 4),
                         Position = UDim2.new(hue, 0, 0, -2),
@@ -1846,21 +1963,21 @@ function CcatUI:Init(config)
                         BorderSizePixel = 0,
                         Parent = hueSlider,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 4),
                         Parent = hueCursor,
                     })
-                    
+
                     New("UIStroke", {
                         Color = Color3.new(0, 0, 0),
                         Thickness = 2,
                         Parent = hueCursor,
                     })
-                    
+
                     local svDragging = false
                     local hDragging = false
-                    
+
                     local function updateSV(input)
                         local pos = math.clamp((input.Position.X - satValFrame.AbsolutePosition.X) / satValFrame.AbsoluteSize.X, 0, 1)
                         local vPos = math.clamp((input.Position.Y - satValFrame.AbsolutePosition.Y) / satValFrame.AbsoluteSize.Y, 0, 1)
@@ -1870,7 +1987,7 @@ function CcatUI:Init(config)
                         local newColor = Color3.fromHSV(hue, sat, val)
                         picker:Set(newColor)
                     end
-                    
+
                     local function updateHue(input)
                         local pos = math.clamp((input.Position.X - hueSlider.AbsolutePosition.X) / hueSlider.AbsoluteSize.X, 0, 1)
                         hue = pos
@@ -1879,108 +1996,108 @@ function CcatUI:Init(config)
                         local newColor = Color3.fromHSV(hue, sat, val)
                         picker:Set(newColor)
                     end
-                    
+
                     satValFrame.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                             svDragging = true
                             updateSV(input)
                         end
                     end)
-                    
+
                     satValFrame.InputChanged:Connect(function(input)
-                        if svDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                        if svDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                             updateSV(input)
                         end
                     end)
-                    
+
                     hueSlider.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                             hDragging = true
                             updateHue(input)
                         end
                     end)
-                    
+
                     hueSlider.InputChanged:Connect(function(input)
-                        if hDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                        if hDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                             updateHue(input)
                         end
                     end)
-                    
+
                     UserInputService.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                             svDragging = false
                             hDragging = false
                         end
                     end)
-                    
+
                     Tween(pickerFrame, 0.3, {Size = UDim2.new(1, 0, 0, 120)}, Enum.EasingStyle.Back)
                 end)
-                
+
                 picker.Display.MouseEnter:Connect(function()
-                    Tween(picker.Display, 0.2, {Size = UDim2.new(0, 40, 0, 26)})
+                    Tween(picker.Display, 0.2, {Size = UDim2.new(0, 48, 0, 30)})
                 end)
-                
+
                 picker.Display.MouseLeave:Connect(function()
-                    Tween(picker.Display, 0.2, {Size = UDim2.new(0, 36, 0, 24)})
+                    Tween(picker.Display, 0.2, {Size = UDim2.new(0, 44, 0, 28)})
                 end)
-                
+
                 function picker:Set(color)
                     picker.Value = color
                     Tween(picker.Display, 0.2, {BackgroundColor3 = color})
                     pcall(picker.Callback, color)
                 end
-                
+
                 return picker
             end
-            
+
             function section:ProgressBar(config)
                 local progress = {}
                 progress.Title = config.Title or "Progress"
                 progress.Value = config.Value or 0
                 progress.Max = config.Max or 100
-                
+
                 progress.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 40),
+                    Size = UDim2.new(1, 0, 0, 44),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = progress.Frame,
                 })
-                
+
                 local header = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 16),
+                    Size = UDim2.new(1, 0, 0, 18),
                     BackgroundTransparency = 1,
                     Parent = progress.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Parent = header,
                 })
-                
+
                 local title = New("TextLabel", {
                     Text = progress.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
                     TextSize = 12,
                     TextColor3 = self.Theme.Text,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(1, -40, 1, 0),
+                    Size = UDim2.new(1, -50, 1, 0),
                     Parent = header,
                 })
-                
+
                 progress.ValueLabel = New("TextLabel", {
                     Text = math.floor((progress.Value / progress.Max) * 100) .. "%",
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold),
                     TextSize = 12,
                     TextColor3 = self.Theme.Accent,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(0, 40, 1, 0),
+                    Size = UDim2.new(0, 50, 1, 0),
                     Parent = header,
                 })
-                
+
                 progress.Track = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 6),
                     BackgroundColor3 = self.Theme.ToggleDisabled,
@@ -1988,39 +2105,39 @@ function CcatUI:Init(config)
                     BorderSizePixel = 0,
                     Parent = progress.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(1, 0),
                     Parent = progress.Track,
                 })
-                
+
                 progress.Fill = New("Frame", {
                     Size = UDim2.new(progress.Value / progress.Max, 0, 1, 0),
                     BackgroundColor3 = self.Theme.Accent,
                     BorderSizePixel = 0,
                     Parent = progress.Track,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(1, 0),
                     Parent = progress.Fill,
                 })
-                
+
                 function progress:Set(value)
                     progress.Value = math.clamp(value, 0, progress.Max)
                     local percent = progress.Value / progress.Max
                     progress.ValueLabel.Text = math.floor(percent * 100) .. "%"
                     Tween(progress.Fill, 0.3, {Size = UDim2.new(percent, 0, 1, 0)})
                 end
-                
+
                 return progress
             end
-            
+
             function section:Image(config)
                 local img = {}
                 img.Image = config.Image or ""
                 img.Size = config.Size or UDim2.new(1, 0, 0, 100)
-                
+
                 img.Frame = New("Frame", {
                     Size = img.Size,
                     BackgroundColor3 = self.Theme.ElementBackground,
@@ -2028,12 +2145,12 @@ function CcatUI:Init(config)
                     BorderSizePixel = 0,
                     Parent = section.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 10),
                     Parent = img.Frame,
                 })
-                
+
                 local imageLabel = New("ImageLabel", {
                     Size = UDim2.new(1, -6, 1, -6),
                     Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -2043,21 +2160,22 @@ function CcatUI:Init(config)
                     ScaleType = Enum.ScaleType.Fit,
                     Parent = img.Frame,
                 })
-                
+
                 return img
             end
-            
+
             function section:Search(config)
                 local search = {}
                 search.Placeholder = config.Placeholder or "Search..."
                 search.Callback = config.Callback or function() end
-                
+
                 search.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 36),
+                    Name = "SearchSection",
+                    Size = UDim2.new(1, 0, 0, 38),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 local searchBg = New("Frame", {
                     Size = UDim2.new(1, 0, 1, 0),
                     BackgroundColor3 = self.Theme.ElementBackground,
@@ -2065,12 +2183,12 @@ function CcatUI:Init(config)
                     BorderSizePixel = 0,
                     Parent = search.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = searchBg,
                 })
-                
+
                 local icon = New("ImageLabel", {
                     Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(0, 10, 0.5, 0),
@@ -2080,7 +2198,7 @@ function CcatUI:Init(config)
                     ImageColor3 = self.Theme.SecondaryText,
                     Parent = searchBg,
                 })
-                
+
                 search.TextBox = New("TextBox", {
                     Text = "",
                     PlaceholderText = search.Placeholder,
@@ -2093,24 +2211,24 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, -42, 1, 0),
                     Parent = searchBg,
                 })
-                
+
                 search.TextBox.Focused:Connect(function()
                     Tween(searchBg, 0.2, {BackgroundTransparency = 0.7, BackgroundColor3 = self.Theme.Hover})
                     Tween(icon, 0.2, {ImageColor3 = self.Theme.Accent})
                 end)
-                
+
                 search.TextBox.FocusLost:Connect(function()
                     Tween(searchBg, 0.2, {BackgroundTransparency = 0.85, BackgroundColor3 = self.Theme.ElementBackground})
                     Tween(icon, 0.2, {ImageColor3 = self.Theme.SecondaryText})
                 end)
-                
+
                 search.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
                     pcall(search.Callback, search.TextBox.Text)
                 end)
-                
+
                 return search
             end
-            
+
             function section:MultiDropdown(config)
                 local dropdown = {}
                 dropdown.Title = config.Title or "Multi Dropdown"
@@ -2119,23 +2237,23 @@ function CcatUI:Init(config)
                 dropdown.Callback = config.Callback or function() end
                 dropdown.Opened = false
                 dropdown.Selected = {}
-                
+
                 for _, v in pairs(dropdown.Default) do
                     dropdown.Selected[v] = true
                 end
-                
+
                 dropdown.Frame = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = dropdown.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = dropdown.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -2145,34 +2263,35 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 0, 16),
                     Parent = dropdown.Frame,
                 })
-                
+
                 dropdown.Button = New("TextButton", {
-                    Size = UDim2.new(1, 0, 0, 32),
+                    Size = UDim2.new(1, 0, 0, 34),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.85,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = dropdown.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = dropdown.Button,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = dropdown.Button,
                 })
-                
+
                 local btnLayout = New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     VerticalAlignment = Enum.VerticalAlignment.Center,
                     Parent = dropdown.Button,
                 })
-                
+
                 dropdown.SelectedLabel = New("TextLabel", {
                     Text = #dropdown.Default > 0 and table.concat(dropdown.Default, ", ") or "Select...",
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -2182,7 +2301,7 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, -22, 1, 0),
                     Parent = dropdown.Button,
                 })
-                
+
                 local arrow = New("ImageLabel", {
                     Size = UDim2.new(0, 16, 0, 16),
                     BackgroundTransparency = 1,
@@ -2190,7 +2309,7 @@ function CcatUI:Init(config)
                     ImageColor3 = self.Theme.SecondaryText,
                     Parent = dropdown.Button,
                 })
-                
+
                 dropdown.Menu = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     Position = UDim2.new(0, 0, 1, 4),
@@ -2201,18 +2320,18 @@ function CcatUI:Init(config)
                     ZIndex = 10,
                     Parent = dropdown.Button,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = dropdown.Menu,
                 })
-                
+
                 New("UIStroke", {
                     Color = self.Theme.Border,
                     Thickness = 1,
                     Parent = dropdown.Menu,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 6),
                     PaddingRight = UDim.new(0, 6),
@@ -2220,54 +2339,55 @@ function CcatUI:Init(config)
                     PaddingBottom = UDim.new(0, 6),
                     Parent = dropdown.Menu,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 4),
                     Parent = dropdown.Menu,
                 })
-                
+
                 local optionButtons = {}
-                
+
                 for _, option in pairs(dropdown.Options) do
                     local optBtn = New("TextButton", {
-                        Size = UDim2.new(1, 0, 0, 26),
+                        Size = UDim2.new(1, 0, 0, 28),
                         BackgroundColor3 = self.Theme.ElementBackground,
                         BackgroundTransparency = 1,
                         BorderSizePixel = 0,
                         Text = "",
                         AutoButtonColor = false,
+                        ZIndex = 11,
                         Parent = dropdown.Menu,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 6),
                         Parent = optBtn,
                     })
-                    
+
                     local optLayout = New("UIListLayout", {
                         FillDirection = Enum.FillDirection.Horizontal,
                         Padding = UDim.new(0, 8),
                         VerticalAlignment = Enum.VerticalAlignment.Center,
                         Parent = optBtn,
                     })
-                    
+
                     New("UIPadding", {
                         PaddingLeft = UDim.new(0, 8),
                         Parent = optBtn,
                     })
-                    
+
                     local checkBox = New("Frame", {
                         Size = UDim2.new(0, 16, 0, 16),
                         BackgroundColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled,
                         BorderSizePixel = 0,
                         Parent = optBtn,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 4),
                         Parent = checkBox,
                     })
-                    
+
                     local checkIcon = New("ImageLabel", {
                         Size = UDim2.new(0, 10, 0, 10),
                         Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -2278,7 +2398,7 @@ function CcatUI:Init(config)
                         ImageTransparency = dropdown.Selected[option] and 0 or 1,
                         Parent = checkBox,
                     })
-                    
+
                     local optLabel = New("TextLabel", {
                         Text = option,
                         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -2288,43 +2408,43 @@ function CcatUI:Init(config)
                         Size = UDim2.new(1, -28, 1, 0),
                         Parent = optBtn,
                     })
-                    
+
                     optBtn.MouseEnter:Connect(function()
                         Tween(optBtn, 0.15, {BackgroundTransparency = 0.85})
                     end)
-                    
+
                     optBtn.MouseLeave:Connect(function()
                         Tween(optBtn, 0.15, {BackgroundTransparency = 1})
                     end)
-                    
+
                     optBtn.MouseButton1Click:Connect(function()
                         dropdown.Selected[option] = not dropdown.Selected[option]
                         Tween(checkBox, 0.2, {BackgroundColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled})
                         Tween(checkIcon, 0.2, {ImageTransparency = dropdown.Selected[option] and 0 or 1})
-                        
+
                         local selectedList = {}
                         for opt, selected in pairs(dropdown.Selected) do
                             if selected then
                                 table.insert(selectedList, opt)
                             end
                         end
-                        
+
                         dropdown.SelectedLabel.Text = #selectedList > 0 and table.concat(selectedList, ", ") or "Select..."
                         dropdown.SelectedLabel.TextColor3 = #selectedList > 0 and self.Theme.Text or self.Theme.SecondaryText
-                        
+
                         pcall(dropdown.Callback, selectedList)
                     end)
-                    
+
                     optionButtons[option] = {Btn = optBtn, Check = checkBox, Icon = checkIcon}
                 end
-                
+
                 function dropdown:Open()
                     dropdown.Opened = true
                     dropdown.Menu.Visible = true
                     Tween(arrow, 0.25, {Rotation = 180})
-                    Tween(dropdown.Menu, 0.25, {BackgroundTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 30 + 12, 160))})
+                    Tween(dropdown.Menu, 0.25, {BackgroundTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 32 + 12, 180))})
                 end
-                
+
                 function dropdown:Close()
                     dropdown.Opened = false
                     Tween(arrow, 0.25, {Rotation = 0})
@@ -2335,15 +2455,15 @@ function CcatUI:Init(config)
                         end
                     end)
                 end
-                
+
                 dropdown.Button.MouseEnter:Connect(function()
                     Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.75})
                 end)
-                
+
                 dropdown.Button.MouseLeave:Connect(function()
                     Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.85})
                 end)
-                
+
                 dropdown.Button.MouseButton1Click:Connect(function()
                     if dropdown.Opened then
                         dropdown:Close()
@@ -2351,29 +2471,29 @@ function CcatUI:Init(config)
                         dropdown:Open()
                     end
                 end)
-                
+
                 return dropdown
             end
-            
+
             function section:List(config)
                 local list = {}
                 list.Title = config.Title or "List"
                 list.Options = config.Options or {}
                 list.Default = config.Default
                 list.Callback = config.Callback or function() end
-                
+
                 list.Frame = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = list.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = list.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -2383,20 +2503,20 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 0, 16),
                     Parent = list.Frame,
                 })
-                
+
                 list.Container = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, math.min(#list.Options * 30 + 12, 140)),
+                    Size = UDim2.new(1, 0, 0, math.min(#list.Options * 30 + 12, 150)),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.9,
                     BorderSizePixel = 0,
                     Parent = list.Frame,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = list.Container,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 6),
                     PaddingRight = UDim.new(0, 6),
@@ -2404,7 +2524,7 @@ function CcatUI:Init(config)
                     PaddingBottom = UDim.new(0, 6),
                     Parent = list.Container,
                 })
-                
+
                 local scrollFrame = New("ScrollingFrame", {
                     Size = UDim2.new(1, 0, 1, 0),
                     BackgroundTransparency = 1,
@@ -2415,18 +2535,18 @@ function CcatUI:Init(config)
                     CanvasSize = UDim2.new(0, 0, 0, 0),
                     Parent = list.Container,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 3),
                     Parent = scrollFrame,
                 })
-                
+
                 list.Selected = list.Default
                 local optionFrames = {}
-                
+
                 for _, option in pairs(list.Options) do
                     local optBtn = New("TextButton", {
-                        Size = UDim2.new(1, 0, 0, 26),
+                        Size = UDim2.new(1, 0, 0, 28),
                         BackgroundColor3 = option == list.Default and self.Theme.Accent or self.Theme.ElementBackground,
                         BackgroundTransparency = option == list.Default and 0.2 or 1,
                         BorderSizePixel = 0,
@@ -2434,12 +2554,12 @@ function CcatUI:Init(config)
                         AutoButtonColor = false,
                         Parent = scrollFrame,
                     })
-                    
+
                     New("UICorner", {
                         CornerRadius = UDim.new(0, 6),
                         Parent = optBtn,
                     })
-                    
+
                     local optLabel = New("TextLabel", {
                         Text = option,
                         FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -2449,19 +2569,19 @@ function CcatUI:Init(config)
                         Size = UDim2.new(1, 0, 1, 0),
                         Parent = optBtn,
                     })
-                    
+
                     optBtn.MouseEnter:Connect(function()
                         if list.Selected ~= option then
                             Tween(optBtn, 0.15, {BackgroundTransparency = 0.85})
                         end
                     end)
-                    
+
                     optBtn.MouseLeave:Connect(function()
                         if list.Selected ~= option then
                             Tween(optBtn, 0.15, {BackgroundTransparency = 1})
                         end
                     end)
-                    
+
                     optBtn.MouseButton1Click:Connect(function()
                         if list.Selected then
                             local prev = optionFrames[list.Selected]
@@ -2470,20 +2590,20 @@ function CcatUI:Init(config)
                                 prev.Label.TextColor3 = self.Theme.Text
                             end
                         end
-                        
+
                         list.Selected = option
                         Tween(optBtn, 0.2, {BackgroundTransparency = 0.2, BackgroundColor3 = self.Theme.Accent})
                         optLabel.TextColor3 = Color3.new(0, 0, 0)
-                        
+
                         pcall(list.Callback, option)
                     end)
-                    
+
                     optionFrames[option] = {Btn = optBtn, Label = optLabel}
                 end
-                
+
                 return list
             end
-            
+
             function section:NumberInput(config)
                 local numInput = {}
                 numInput.Title = config.Title or "Number Input"
@@ -2493,19 +2613,19 @@ function CcatUI:Init(config)
                 numInput.Step = config.Step or 1
                 numInput.Callback = config.Callback or function() end
                 numInput.Value = numInput.Default
-                
+
                 numInput.Frame = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = Enum.AutomaticSize.Y,
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = numInput.Frame,
                 })
-                
+
                 local label = New("TextLabel", {
                     Text = numInput.Title,
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
@@ -2515,34 +2635,35 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 0, 16),
                     Parent = numInput.Frame,
                 })
-                
+
                 local inputContainer = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 34),
+                    Size = UDim2.new(1, 0, 0, 36),
                     BackgroundTransparency = 1,
                     Parent = numInput.Frame,
                 })
-                
+
                 New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 6),
                     Parent = inputContainer,
                 })
-                
+
                 local minusBtn = New("TextButton", {
-                    Size = UDim2.new(0, 34, 0, 34),
+                    Size = UDim2.new(0, 36, 0, 36),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.85,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = inputContainer,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 6),
                     Parent = minusBtn,
                 })
-                
+
                 local minusIcon = New("ImageLabel", {
                     Size = UDim2.new(0, 14, 0, 14),
                     Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -2552,26 +2673,26 @@ function CcatUI:Init(config)
                     ImageColor3 = self.Theme.Text,
                     Parent = minusBtn,
                 })
-                
+
                 numInput.BoxFrame = New("Frame", {
-                    Size = UDim2.new(1, -80, 0, 34),
+                    Size = UDim2.new(1, -84, 0, 36),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.85,
                     BorderSizePixel = 0,
                     Parent = inputContainer,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 8),
                     Parent = numInput.BoxFrame,
                 })
-                
+
                 New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = numInput.BoxFrame,
                 })
-                
+
                 numInput.TextBox = New("TextBox", {
                     Text = tostring(numInput.Value),
                     FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
@@ -2582,22 +2703,23 @@ function CcatUI:Init(config)
                     ClearTextOnFocus = false,
                     Parent = numInput.BoxFrame,
                 })
-                
+
                 local plusBtn = New("TextButton", {
-                    Size = UDim2.new(0, 34, 0, 34),
+                    Size = UDim2.new(0, 36, 0, 36),
                     BackgroundColor3 = self.Theme.ElementBackground,
                     BackgroundTransparency = 0.85,
                     BorderSizePixel = 0,
                     Text = "",
                     AutoButtonColor = false,
+                    Active = true,
                     Parent = inputContainer,
                 })
-                
+
                 New("UICorner", {
                     CornerRadius = UDim.new(0, 6),
                     Parent = plusBtn,
                 })
-                
+
                 local plusIcon = New("ImageLabel", {
                     Size = UDim2.new(0, 14, 0, 14),
                     Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -2607,21 +2729,21 @@ function CcatUI:Init(config)
                     ImageColor3 = self.Theme.Text,
                     Parent = plusBtn,
                 })
-                
+
                 function numInput:Set(value)
                     numInput.Value = math.clamp(value, numInput.Min, numInput.Max)
                     numInput.TextBox.Text = tostring(numInput.Value)
                     pcall(numInput.Callback, numInput.Value)
                 end
-                
+
                 minusBtn.MouseButton1Click:Connect(function()
                     numInput:Set(numInput.Value - numInput.Step)
                 end)
-                
+
                 plusBtn.MouseButton1Click:Connect(function()
                     numInput:Set(numInput.Value + numInput.Step)
                 end)
-                
+
                 numInput.TextBox.FocusLost:Connect(function()
                     local num = tonumber(numInput.TextBox.Text)
                     if num then
@@ -2630,28 +2752,56 @@ function CcatUI:Init(config)
                         numInput.TextBox.Text = tostring(numInput.Value)
                     end
                 end)
-                
+
                 return numInput
             end
-            
+
+            function section:Label(config)
+                local label = {}
+                label.Text = config.Text or "Label"
+
+                label.Frame = New("TextLabel", {
+                    Text = label.Text,
+                    FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Medium),
+                    TextSize = 12,
+                    TextColor3 = self.Theme.SecondaryText,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 0, 20),
+                    TextWrapped = true,
+                    Parent = section.Frame,
+                })
+
+                function label:Set(text)
+                    label.Text = text
+                    label.Frame.Text = text
+                end
+
+                return label
+            end
+
+            function section:Spacer()
+                local spacer = New("Frame", {
+                    Size = UDim2.new(1, 0, 0, 8),
+                    BackgroundTransparency = 1,
+                    Parent = section.Frame,
+                })
+                return spacer
+            end
+
             return section
         end
-        
-        table.insert(self.Tabs, tab)
-        
-        if #self.Tabs == 1 then
+
+        self.Tabs[tab.Name] = tab
+
+        if not self.CurrentTab then
             task.delay(0.2, function()
                 tab:Select()
             end)
         end
-        
+
         return tab
     end
-    
-    self.ScreenGui.Parent = CoreGui
-    self.NotificationGui.Parent = CoreGui
-    self.WatermarkGui.Parent = CoreGui
-    
+
     return self
 end
 
