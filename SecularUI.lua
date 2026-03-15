@@ -1,5 +1,5 @@
-local WindGlass = {}
-WindGlass.__index = WindGlass
+local Solar = {}
+Solar.__index = Solar
 
 -- Services
 local Players = game:GetService("Players")
@@ -9,7 +9,7 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Lucide Icons (Simplified mapping)
+-- Lucide Icons
 local Icons = {
     ["x"] = "rbxassetid://7733658504",
     ["check"] = "rbxassetid://7733715400",
@@ -134,14 +134,13 @@ function NotificationSystem:ShowNext()
     self.Active = true
     local data = table.remove(self.Queue, 1)
     
-    local screenGui = PlayerGui:FindFirstChild("WindGlassNotifications") or Create("ScreenGui", {
-        Name = "WindGlassNotifications",
+    local screenGui = PlayerGui:FindFirstChild("SolarNotifications") or Create("ScreenGui", {
+        Name = "SolarNotifications",
         Parent = PlayerGui,
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     })
     
-    -- Compact notification size (scaled down)
     local notifFrame = Create("CanvasGroup", {
         Size = UDim2.new(0, 240, 0, 0),
         Position = UDim2.new(1, -20, 1, -80),
@@ -163,7 +162,6 @@ function NotificationSystem:ShowNext()
     })
     stroke.Parent = notifFrame
     
-    -- Glass effect
     AddGlassEffect(notifFrame, 0.9)
     
     local layout = Create("UIListLayout", {
@@ -181,7 +179,6 @@ function NotificationSystem:ShowNext()
     })
     padding.Parent = notifFrame
     
-    -- Icon
     local icon = Create("ImageLabel", {
         Size = UDim2.new(0, 20, 0, 20),
         BackgroundTransparency = 1,
@@ -232,7 +229,6 @@ function NotificationSystem:ShowNext()
         content.Parent = textContainer
     end
     
-    -- Progress bar
     local progressBg = Create("Frame", {
         Size = UDim2.new(1, 0, 0, 2),
         Position = UDim2.new(0, 0, 1, -2),
@@ -252,7 +248,6 @@ function NotificationSystem:ShowNext()
     
     notifFrame.Parent = screenGui
     
-    -- Animate in
     Tween(notifFrame, 0.4, {GroupTransparency = 0}, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     Tween(progress, data.Duration, {Size = UDim2.new(0, 0, 1, 0)}, Enum.EasingStyle.Linear)
     
@@ -274,7 +269,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     self.Callback = callback or function() end
     self.Opened = false
     
-    -- Compact trigger button
     self.Trigger = Create("TextButton", {
         Size = UDim2.new(0, 32, 0, 32),
         BackgroundColor3 = self.Color,
@@ -291,7 +285,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     })
     stroke.Parent = self.Trigger
     
-    -- Picker Frame (hidden initially)
     self.PickerFrame = Create("CanvasGroup", {
         Size = UDim2.new(0, 220, 0, 0),
         Position = UDim2.new(0, 0, 1, 10),
@@ -316,7 +309,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     })
     pickerPadding.Parent = self.PickerFrame
     
-    -- Saturation/Value Box
     self.SVMap = Create("ImageLabel", {
         Size = UDim2.new(0, 140, 0, 140),
         BackgroundColor3 = Color3.fromHSV(0, 1, 1),
@@ -327,7 +319,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     local svCorner = Create("UICorner", {CornerRadius = UDim.new(0, 12)})
     svCorner.Parent = self.SVMap
     
-    -- SV Cursor
     self.SVCursor = Create("Frame", {
         Size = UDim2.new(0, 12, 0, 12),
         Position = UDim2.new(1, -6, 0, -6),
@@ -339,7 +330,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     cursorCorner.Parent = self.SVCursor
     self.SVCursor.Parent = self.SVMap
     
-    -- Hue Slider
     self.HueSlider = Create("Frame", {
         Size = UDim2.new(0, 20, 0, 140),
         Position = UDim2.new(1, -20, 0, 0),
@@ -364,7 +354,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     local hueCorner = Create("UICorner", {CornerRadius = UDim.new(0, 10)})
     hueCorner.Parent = self.HueSlider
     
-    -- Hue Cursor
     self.HueCursor = Create("Frame", {
         Size = UDim2.new(1, 4, 0, 4),
         Position = UDim2.new(0, -2, 0, 0),
@@ -374,7 +363,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     })
     self.HueCursor.Parent = self.HueSlider
     
-    -- RGB Inputs
     local inputContainer = Create("Frame", {
         Size = UDim2.new(1, 0, 0, 28),
         Position = UDim2.new(0, 0, 0, 156),
@@ -425,7 +413,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     
     self.RGBInputs = inputs
     
-    -- Preview
     self.Preview = Create("Frame", {
         Size = UDim2.new(0, 40, 0, 28),
         Position = UDim2.new(1, -40, 0, 156),
@@ -435,7 +422,6 @@ function ColorPicker:New(parent, defaultColor, callback)
     previewCorner.Parent = self.Preview
     self.Preview.Parent = self.PickerFrame
     
-    -- Interactions
     self.Trigger.MouseButton1Click:Connect(function()
         self:Toggle()
     end)
@@ -505,7 +491,6 @@ function ColorPicker:SetupInteractions()
         end
     end)
     
-    -- RGB inputs
     for label, input in pairs(self.RGBInputs) do
         input.FocusLost:Connect(function()
             local val = tonumber(input.Text) or 0
@@ -554,7 +539,6 @@ function ColorPicker:UpdateColor()
     self.Trigger.BackgroundColor3 = color
     self.Preview.BackgroundColor3 = color
     
-    -- Update RGB inputs
     local r = math.floor(color.R * 255)
     local g = math.floor(color.G * 255)
     local b = math.floor(color.B * 255)
@@ -587,10 +571,10 @@ function ColorPicker:UpdateFromColor(color)
 end
 
 -- Main Window
-function WindGlass:CreateWindow(config)
+function Solar:CreateWindow(config)
     config = config or {}
     local window = {}
-    window.Title = config.Title or "WindGlass"
+    window.Title = config.Title or "Solar"
     window.SubTitle = config.SubTitle or ""
     window.Icon = config.Icon or "zap"
     window.Size = config.Size or UDim2.new(0, 520, 0, 340)
@@ -600,15 +584,13 @@ function WindGlass:CreateWindow(config)
     window.Tabs = {}
     window.CurrentTab = nil
     
-    -- Main ScreenGui
     window.ScreenGui = Create("ScreenGui", {
-        Name = "WindGlass",
+        Name = "Solar",
         Parent = PlayerGui,
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     })
     
-    -- Scale container
     window.ScaleFrame = Create("Frame", {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
@@ -620,7 +602,6 @@ function WindGlass:CreateWindow(config)
     })
     window.ScaleUI.Parent = window.ScaleFrame
     
-    -- Main container
     window.MainFrame = Create("CanvasGroup", {
         Size = window.Size,
         Position = window.Position,
@@ -630,14 +611,11 @@ function WindGlass:CreateWindow(config)
         Parent = window.ScaleFrame,
     })
     
-    -- Glass effect
     AddGlassEffect(window.MainFrame, 0.82)
     
-    -- Corner radius
     local mainCorner = Create("UICorner", {CornerRadius = UDim.new(0, 20)})
     mainCorner.Parent = window.MainFrame
     
-    -- Stroke
     local mainStroke = Create("UIStroke", {
         Color = Color3.fromRGB(60, 60, 70),
         Thickness = 1.5,
@@ -645,7 +623,6 @@ function WindGlass:CreateWindow(config)
     })
     mainStroke.Parent = window.MainFrame
     
-    -- Top bar
     window.TopBar = Create("Frame", {
         Size = UDim2.new(1, 0, 0, 44),
         BackgroundTransparency = 1,
@@ -660,7 +637,6 @@ function WindGlass:CreateWindow(config)
     })
     topPadding.Parent = window.TopBar
     
-    -- Title section
     local titleContainer = Create("Frame", {
         Size = UDim2.new(0, 0, 1, 0),
         BackgroundTransparency = 1,
@@ -675,7 +651,6 @@ function WindGlass:CreateWindow(config)
     })
     titleLayout.Parent = titleContainer
     
-    -- Icon
     local titleIcon = Create("ImageLabel", {
         Size = UDim2.new(0, 20, 0, 20),
         BackgroundTransparency = 1,
@@ -684,7 +659,6 @@ function WindGlass:CreateWindow(config)
     })
     titleIcon.Parent = titleContainer
     
-    -- Title text
     local titleText = Create("TextLabel", {
         Size = UDim2.new(0, 0, 1, 0),
         BackgroundTransparency = 1,
@@ -709,7 +683,6 @@ function WindGlass:CreateWindow(config)
         subTitle.Parent = window.TopBar
     end
     
-    -- Control buttons
     local controls = Create("Frame", {
         Size = UDim2.new(0, 0, 1, 0),
         Position = UDim2.new(1, 0, 0, 0),
@@ -726,7 +699,6 @@ function WindGlass:CreateWindow(config)
     })
     controlsLayout.Parent = controls
     
-    -- Search button
     local searchBtn = Create("ImageButton", {
         Size = UDim2.new(0, 28, 0, 28),
         BackgroundTransparency = 0.9,
@@ -738,7 +710,6 @@ function WindGlass:CreateWindow(config)
     searchCorner.Parent = searchBtn
     searchBtn.Parent = controls
     
-    -- Minimize button
     local minBtn = Create("ImageButton", {
         Size = UDim2.new(0, 28, 0, 28),
         BackgroundTransparency = 0.9,
@@ -750,7 +721,6 @@ function WindGlass:CreateWindow(config)
     minCorner.Parent = minBtn
     minBtn.Parent = controls
     
-    -- Close button
     local closeBtn = Create("ImageButton", {
         Size = UDim2.new(0, 28, 0, 28),
         BackgroundTransparency = 0.9,
@@ -762,7 +732,6 @@ function WindGlass:CreateWindow(config)
     closeCorner.Parent = closeBtn
     closeBtn.Parent = controls
     
-    -- Sidebar
     window.SideBar = Create("ScrollingFrame", {
         Size = UDim2.new(0, 140, 1, -44),
         Position = UDim2.new(0, 0, 0, 44),
@@ -775,7 +744,7 @@ function WindGlass:CreateWindow(config)
     window.SideBar.Parent = window.MainFrame
     
     local sidePadding = Create("UIPadding", {
-        PaddingTop = UDim2.new(0, 8),
+        PaddingTop = UDim.new(0, 8),
         PaddingLeft = UDim.new(0, 12),
         PaddingRight = UDim.new(0, 8),
         PaddingBottom = UDim.new(0, 12),
@@ -788,7 +757,6 @@ function WindGlass:CreateWindow(config)
     })
     sideLayout.Parent = window.SideBar
     
-    -- Tab highlight
     window.TabHighlight = Create("Frame", {
         Size = UDim2.new(0, 3, 0, 28),
         Position = UDim2.new(0, 0, 0, 0),
@@ -799,7 +767,6 @@ function WindGlass:CreateWindow(config)
     highlightCorner.Parent = window.TabHighlight
     window.TabHighlight.Parent = window.SideBar
     
-    -- Content area
     window.Content = Create("Frame", {
         Size = UDim2.new(1, -148, 1, -52),
         Position = UDim2.new(0, 144, 0, 48),
@@ -810,7 +777,6 @@ function WindGlass:CreateWindow(config)
     contentCorner.Parent = window.Content
     window.Content.Parent = window.MainFrame
     
-    -- Content scrolling
     window.ContentScroll = Create("ScrollingFrame", {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
@@ -834,7 +800,6 @@ function WindGlass:CreateWindow(config)
     contentLayout.Parent = window.ContentScroll
     window.ContentScroll.Parent = window.Content
     
-    -- Resize handle (bottom-right)
     window.ResizeHandle = Create("ImageButton", {
         Size = UDim2.new(0, 24, 0, 24),
         Position = UDim2.new(1, -4, 1, -4),
@@ -847,7 +812,6 @@ function WindGlass:CreateWindow(config)
     })
     window.ResizeHandle.Parent = window.MainFrame
     
-    -- Scale indicator
     window.ScaleLabel = Create("TextLabel", {
         Size = UDim2.new(0, 50, 0, 20),
         Position = UDim2.new(1, -30, 1, -30),
@@ -865,7 +829,6 @@ function WindGlass:CreateWindow(config)
     scaleCorner.Parent = window.ScaleLabel
     window.ScaleLabel.Parent = window.MainFrame
     
-    -- Dragging
     local dragging = false
     local dragStart = nil
     local startPos = nil
@@ -896,7 +859,6 @@ function WindGlass:CreateWindow(config)
         end
     end)
     
-    -- Resizing
     local resizing = false
     local resizeStart = nil
     local startSize = nil
@@ -930,7 +892,6 @@ function WindGlass:CreateWindow(config)
         end
     end)
     
-    -- Hover effects for buttons
     local function AddHoverEffect(btn, hoverColor, defaultColor)
         btn.MouseEnter:Connect(function()
             Tween(btn, 0.15, {BackgroundTransparency = 0.7, ImageColor3 = hoverColor})
@@ -944,7 +905,6 @@ function WindGlass:CreateWindow(config)
     AddHoverEffect(minBtn, Color3.fromRGB(255, 255, 255), Color3.fromRGB(180, 180, 190))
     AddHoverEffect(closeBtn, Color3.fromRGB(255, 150, 150), Color3.fromRGB(255, 100, 100))
     
-    -- Close animation
     closeBtn.MouseButton1Click:Connect(function()
         Tween(window.MainFrame, 0.3, {GroupTransparency = 1, Size = UDim2.new(window.MainFrame.Size.X.Scale, window.MainFrame.Size.X.Offset * 0.9, window.MainFrame.Size.Y.Scale, window.MainFrame.Size.Y.Offset * 0.9)})
         task.delay(0.3, function()
@@ -952,7 +912,6 @@ function WindGlass:CreateWindow(config)
         end)
     end)
     
-    -- Minimize
     local minimized = false
     minBtn.MouseButton1Click:Connect(function()
         minimized = not minimized
@@ -967,12 +926,10 @@ function WindGlass:CreateWindow(config)
         end
     end)
     
-    -- Open animation
     task.spawn(function()
         Tween(window.MainFrame, 0.4, {GroupTransparency = 0}, Enum.EasingStyle.Back)
     end)
     
-    -- Tab creation function
     function window:CreateTab(tabConfig)
         tabConfig = tabConfig or {}
         local tab = {}
@@ -980,7 +937,6 @@ function WindGlass:CreateWindow(config)
         tab.Icon = tabConfig.Icon or "home"
         tab.Content = {}
         
-        -- Tab button
         tab.Button = Create("TextButton", {
             Size = UDim2.new(1, 0, 0, 32),
             BackgroundTransparency = 1,
@@ -1019,7 +975,6 @@ function WindGlass:CreateWindow(config)
         })
         tabLabel.Parent = tab.Button
         
-        -- Tab content container
         tab.Container = Create("Frame", {
             Size = UDim2.new(1, 0, 0, 0),
             BackgroundTransparency = 1,
@@ -1033,12 +988,10 @@ function WindGlass:CreateWindow(config)
         containerLayout.Parent = tab.Container
         tab.Container.Parent = self.ContentScroll
         
-        -- Selection
         tab.Button.MouseButton1Click:Connect(function()
             self:SelectTab(tab)
         end)
         
-        -- Hover
         tab.Button.MouseEnter:Connect(function()
             if self.CurrentTab ~= tab then
                 Tween(tab.Button, 0.15, {BackgroundTransparency = 0.95})
@@ -1052,7 +1005,6 @@ function WindGlass:CreateWindow(config)
         
         table.insert(self.Tabs, tab)
         
-        -- Auto select first tab
         if #self.Tabs == 1 then
             self:SelectTab(tab)
         end
@@ -1060,31 +1012,39 @@ function WindGlass:CreateWindow(config)
         return tab
     end
     
-    -- Tab selection
     function window:SelectTab(tab)
         if self.CurrentTab == tab then return end
         
-        -- Deselect current
         if self.CurrentTab then
             Tween(self.CurrentTab.Button, 0.2, {BackgroundTransparency = 1})
-            Tween(self.CurrentTab.Button:FindFirstChildOfClass("UIListLayout").Parent:FindFirstChild("ImageLabel"), 0.2, {ImageColor3 = Color3.fromRGB(140, 140, 150)})
-            Tween(self.CurrentTab.Button:FindFirstChildOfClass("UIListLayout").Parent:FindFirstChild("TextLabel"), 0.2, {TextColor3 = Color3.fromRGB(140, 140, 150)})
+            local currentLayout = self.CurrentTab.Button:FindFirstChildOfClass("UIListLayout")
+            if currentLayout then
+                local parent = currentLayout.Parent
+                local img = parent:FindFirstChildOfClass("ImageLabel")
+                local txt = parent:FindFirstChildOfClass("TextLabel")
+                if img then Tween(img, 0.2, {ImageColor3 = Color3.fromRGB(140, 140, 150)}) end
+                if txt then Tween(txt, 0.2, {TextColor3 = Color3.fromRGB(140, 140, 150)}) end
+            end
             self.CurrentTab.Container.Visible = false
         end
         
-        -- Select new
         self.CurrentTab = tab
         Tween(tab.Button, 0.2, {BackgroundTransparency = 0.9, BackgroundColor3 = Color3.fromRGB(50, 50, 60)})
-        Tween(tabIcon, 0.2, {ImageColor3 = Color3.fromRGB(100, 180, 255)})
-        Tween(tabLabel, 0.2, {TextColor3 = Color3.fromRGB(255, 255, 255)})
         
-        -- Move highlight
+        local tabLayout = tab.Button:FindFirstChildOfClass("UIListLayout")
+        if tabLayout then
+            local parent = tabLayout.Parent
+            local tabIcon = parent:FindFirstChildOfClass("ImageLabel")
+            local tabLabel = parent:FindFirstChildOfClass("TextLabel")
+            if tabIcon then Tween(tabIcon, 0.2, {ImageColor3 = Color3.fromRGB(100, 180, 255)}) end
+            if tabLabel then Tween(tabLabel, 0.2, {TextColor3 = Color3.fromRGB(255, 255, 255)}) end
+        end
+        
         local btnPos = tab.Button.AbsolutePosition.Y - self.SideBar.AbsolutePosition.Y
         Tween(self.TabHighlight, 0.3, {Position = UDim2.new(0, 0, 0, btnPos + 2), Size = UDim2.new(0, 3, 0, tab.Button.AbsoluteSize.Y - 4)}, Enum.EasingStyle.Quint)
         
         tab.Container.Visible = true
         
-        -- Animate content
         for _, child in pairs(tab.Container:GetChildren()) do
             if child:IsA("Frame") or child:IsA("TextButton") then
                 child.Position = UDim2.new(0, 20, child.Position.Y.Scale, child.Position.Y.Offset)
@@ -1093,7 +1053,6 @@ function WindGlass:CreateWindow(config)
         end
     end
     
-    -- Section creation
     function window:CreateSection(tab, title)
         local section = Create("Frame", {
             Size = UDim2.new(1, 0, 0, 0),
@@ -1159,7 +1118,6 @@ function WindGlass:CreateWindow(config)
         end
     end
     
-    -- Toggle component
     function window:CreateToggle(parent, config)
         config = config or {}
         local toggle = {}
@@ -1211,7 +1169,6 @@ function WindGlass:CreateWindow(config)
             desc.Parent = textContainer
         end
         
-        -- Toggle switch
         local switch = Create("TextButton", {
             Size = UDim2.new(0, 44, 0, 24),
             Position = UDim2.new(1, 0, 0.5, 0),
@@ -1233,7 +1190,6 @@ function WindGlass:CreateWindow(config)
         knobCorner.Parent = knob
         knob.Parent = switch
         
-        -- Glow effect when on
         local glow = Create("ImageLabel", {
             Size = UDim2.new(1, 20, 1, 20),
             Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -1271,7 +1227,6 @@ function WindGlass:CreateWindow(config)
         return toggle
     end
     
-    -- Slider component
     function window:CreateSlider(parent, config)
         config = config or {}
         local slider = {}
@@ -1315,7 +1270,6 @@ function WindGlass:CreateWindow(config)
         valueCorner.Parent = valueBox
         valueBox.Parent = frame
         
-        -- Slider track
         local track = Create("Frame", {
             Size = UDim2.new(1, 0, 0, 6),
             Position = UDim2.new(0, 0, 0, 36),
@@ -1326,7 +1280,6 @@ function WindGlass:CreateWindow(config)
         trackCorner.Parent = track
         track.Parent = frame
         
-        -- Fill
         local fill = Create("Frame", {
             Size = UDim2.new(0, 0, 1, 0),
             BackgroundColor3 = Color3.fromRGB(100, 180, 255),
@@ -1336,7 +1289,6 @@ function WindGlass:CreateWindow(config)
         fillCorner.Parent = fill
         fill.Parent = track
         
-        -- Handle
         local handle = Create("Frame", {
             Size = UDim2.new(0, 16, 0, 16),
             Position = UDim2.new(0, 0, 0.5, 0),
@@ -1348,7 +1300,6 @@ function WindGlass:CreateWindow(config)
         handleCorner.Parent = handle
         handle.Parent = track
         
-        -- Handle glow
         local handleGlow = Create("ImageLabel", {
             Size = UDim2.new(1, 10, 1, 10),
             Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -1376,7 +1327,6 @@ function WindGlass:CreateWindow(config)
             slider.Callback(value)
         end
         
-        -- Dragging
         local dragging = false
         
         track.InputBegan:Connect(function(input)
@@ -1416,7 +1366,6 @@ function WindGlass:CreateWindow(config)
         return slider
     end
     
-    -- Button component
     function window:CreateButton(parent, config)
         config = config or {}
         local btn = {}
@@ -1464,7 +1413,6 @@ function WindGlass:CreateWindow(config)
         })
         label.Parent = frame
         
-        -- Effects
         frame.MouseEnter:Connect(function()
             Tween(frame, 0.15, {BackgroundColor3 = btn.Variant == "Primary" and Color3.fromRGB(120, 200, 255) or Color3.fromRGB(65, 65, 75)})
         end)
@@ -1488,7 +1436,6 @@ function WindGlass:CreateWindow(config)
         return btn
     end
     
-    -- Dropdown component
     function window:CreateDropdown(parent, config)
         config = config or {}
         local dropdown = {}
@@ -1556,7 +1503,6 @@ function WindGlass:CreateWindow(config)
         })
         arrow.Parent = trigger
         
-        -- Dropdown menu
         local menu = Create("CanvasGroup", {
             Size = UDim2.new(1, 0, 0, 0),
             Position = UDim2.new(0, 0, 1, 8),
@@ -1688,7 +1634,6 @@ function WindGlass:CreateWindow(config)
         return dropdown
     end
     
-    -- Input component
     function window:CreateInput(parent, config)
         config = config or {}
         local input = {}
@@ -1736,7 +1681,6 @@ function WindGlass:CreateWindow(config)
         inputPadding.Parent = inputBox
         inputBox.Parent = frame
         
-        -- Focus effects
         inputBox.Focused:Connect(function()
             Tween(inputBox, 0.2, {BackgroundColor3 = Color3.fromRGB(55, 55, 65)})
         end)
@@ -1750,7 +1694,6 @@ function WindGlass:CreateWindow(config)
         return input
     end
     
-    -- Color picker wrapper
     function window:CreateColorPicker(parent, config)
         config = config or {}
         local picker = {}
@@ -1786,7 +1729,6 @@ function WindGlass:CreateWindow(config)
         return picker
     end
     
-    -- Notification wrapper
     function window:Notify(data)
         NotificationSystem:New(data)
     end
@@ -1794,5 +1736,4 @@ function WindGlass:CreateWindow(config)
     return window
 end
 
--- Return library
-return WindGlass
+return Solar
