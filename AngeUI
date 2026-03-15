@@ -4,9 +4,10 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
 local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
+
+local Icons = loadstring(game:HttpGet("https://raw.githubusercontent.com/JanseJYC/UI-LOL/refs/heads/main/Icons.txt"))()
 
 local function New(instanceType, properties, children)
     local instance = Instance.new(instanceType)
@@ -26,25 +27,8 @@ local function Tween(instance, duration, properties, easingStyle, easingDirectio
     return tween
 end
 
-local function RoundFrame(radius, shape, properties, children)
-    local imageLabel = New("ImageLabel", {
-        Name = shape or "Squircle",
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://80999662900595",
-        ScaleType = Enum.ScaleType.Slice,
-        SliceCenter = Rect.new(99, 99, 99, 99),
-        SliceScale = 1,
-    })
-    
-    for prop, val in pairs(properties or {}) do
-        imageLabel[prop] = val
-    end
-    
-    for _, child in pairs(children or {}) do
-        child.Parent = imageLabel
-    end
-    
-    return imageLabel
+local function GetIcon(name)
+    return Icons[name] or Icons["zap"] or "rbxassetid://130551565616516"
 end
 
 local function Drag(frame, dragPoints, callback)
@@ -93,276 +77,11 @@ local function Drag(frame, dragPoints, callback)
     }
 end
 
-local Icons = {
-    ["zap"] = "rbxassetid://10723434557",
-    ["home"] = "rbxassetid://10723415128",
-    ["settings"] = "rbxassetid://10734950020",
-    ["toggle-right"] = "rbxassetid://10723434557",
-    ["sliders"] = "rbxassetid://10734950020",
-    ["chevrons-up-down"] = "rbxassetid://10723415128",
-    ["x"] = "rbxassetid://10723434557",
-    ["minus"] = "rbxassetid://10723415128",
-    ["maximize"] = "rbxassetid://10734950020",
-    ["palette"] = "rbxassetid://10723415128",
-    ["keyboard"] = "rbxassetid://10723434557",
-    ["type"] = "rbxassetid://10734950020",
-    ["search"] = "rbxassetid://10723415128",
-    ["image"] = "rbxassetid://10723434557",
-    ["check"] = "rbxassetid://10734950020",
-    ["info"] = "rbxassetid://10723415128",
-    ["alert"] = "rbxassetid://10723434557",
-    ["copy"] = "rbxassetid://10734950020",
-    ["refresh"] = "rbxassetid://10723415128",
-    ["trash"] = "rbxassetid://10723434557",
-    ["lock"] = "rbxassetid://10734950020",
-    ["unlock"] = "rbxassetid://10723415128",
-    ["plus"] = "rbxassetid://10723434557",
-    ["minus-circle"] = "rbxassetid://10723415128",
-    ["moon"] = "rbxassetid://10734950020",
-    ["sun"] = "rbxassetid://10723415128",
-    ["user"] = "rbxassetid://10723434557",
-    ["users"] = "rbxassetid://10734950020",
-    ["target"] = "rbxassetid://10723415128",
-    ["crosshair"] = "rbxassetid://10723434557",
-    ["shield"] = "rbxassetid://10734950020",
-    ["sword"] = "rbxassetid://10723415128",
-    ["heart"] = "rbxassetid://10723434557",
-    ["star"] = "rbxassetid://10734950020",
-    ["award"] = "rbxassetid://10723415128",
-    ["clock"] = "rbxassetid://10723434557",
-    ["calendar"] = "rbxassetid://10734950020",
-    ["map"] = "rbxassetid://10723415128",
-    ["compass"] = "rbxassetid://10723434557",
-    ["anchor"] = "rbxassetid://10734950020",
-    ["box"] = "rbxassetid://10723415128",
-    ["package"] = "rbxassetid://10723434557",
-    ["gift"] = "rbxassetid://10734950020",
-    ["dollar"] = "rbxassetid://10723415128",
-    ["credit-card"] = "rbxassetid://10723434557",
-    ["shopping-cart"] = "rbxassetid://10734950020",
-    ["bag"] = "rbxassetid://10723415128",
-    ["tag"] = "rbxassetid://10723434557",
-    ["bookmark"] = "rbxassetid://10734950020",
-    ["flag"] = "rbxassetid://10723415128",
-    ["bell"] = "rbxassetid://10723434557",
-    ["volume"] = "rbxassetid://10734950020",
-    ["mic"] = "rbxassetid://10723415128",
-    ["video"] = "rbxassetid://10723434557",
-    ["camera"] = "rbxassetid://10734950020",
-    ["image-icon"] = "rbxassetid://10723415128",
-    ["folder"] = "rbxassetid://10723434557",
-    ["file"] = "rbxassetid://10734950020",
-    ["paperclip"] = "rbxassetid://10723415128",
-    ["link"] = "rbxassetid://10723434557",
-    ["external-link"] = "rbxassetid://10734950020",
-    ["share"] = "rbxassetid://10723415128",
-    ["send"] = "rbxassetid://10723434557",
-    ["mail"] = "rbxassetid://10734950020",
-    ["message"] = "rbxassetid://10723415128",
-    ["chat"] = "rbxassetid://10723434557",
-    ["comment"] = "rbxassetid://10734950020",
-    ["hash"] = "rbxassetid://10723415128",
-    ["at-sign"] = "rbxassetid://10723434557",
-    ["phone"] = "rbxassetid://10734950020",
-    ["wifi"] = "rbxassetid://10723415128",
-    ["bluetooth"] = "rbxassetid://10723434557",
-    ["battery"] = "rbxassetid://10734950020",
-    ["cpu"] = "rbxassetid://10723415128",
-    ["monitor"] = "rbxassetid://10723434557",
-    ["smartphone"] = "rbxassetid://10734950020",
-    ["tablet"] = "rbxassetid://10723415128",
-    ["watch"] = "rbxassetid://10723434557",
-    ["activity"] = "rbxassetid://10734950020",
-    ["bar-chart"] = "rbxassetid://10723415128",
-    ["pie-chart"] = "rbxassetid://10723434557",
-    ["trending-up"] = "rbxassetid://10734950020",
-    ["trending-down"] = "rbxassetid://10723415128",
-    ["loader"] = "rbxassetid://10723434557",
-    ["download"] = "rbxassetid://10734950020",
-    ["upload"] = "rbxassetid://10723415128",
-    ["cloud"] = "rbxassetid://10723434557",
-    ["cloud-rain"] = "rbxassetid://10734950020",
-    ["cloud-snow"] = "rbxassetid://10723415128",
-    ["sun-weather"] = "rbxassetid://10723434557",
-    ["moon-weather"] = "rbxassetid://10734950020",
-    ["thermometer"] = "rbxassetid://10723415128",
-    ["droplet"] = "rbxassetid://10723434557",
-    ["wind"] = "rbxassetid://10734950020",
-    ["umbrella"] = "rbxassetid://10723415128",
-    ["flame"] = "rbxassetid://10723434557",
-    ["snowflake"] = "rbxassetid://10734950020",
-    ["eye"] = "rbxassetid://10723415128",
-    ["eye-off"] = "rbxassetid://10723434557",
-    ["git-branch"] = "rbxassetid://10734950020",
-    ["git-commit"] = "rbxassetid://10723415128",
-    ["git-merge"] = "rbxassetid://10723434557",
-    ["git-pull-request"] = "rbxassetid://10734950020",
-    ["github"] = "rbxassetid://10723415128",
-    ["gitlab"] = "rbxassetid://10723434557",
-    ["code"] = "rbxassetid://10734950020",
-    ["terminal"] = "rbxassetid://10723415128",
-    ["play"] = "rbxassetid://10723434557",
-    ["pause"] = "rbxassetid://10734950020",
-    ["stop"] = "rbxassetid://10723415128",
-    ["skip-forward"] = "rbxassetid://10723434557",
-    ["skip-back"] = "rbxassetid://10734950020",
-    ["shuffle"] = "rbxassetid://10723415128",
-    ["repeat-icon"] = "rbxassetid://10723434557",
-    ["mic-off"] = "rbxassetid://10734950020",
-    ["volume-x"] = "rbxassetid://10723415128",
-    ["volume-1"] = "rbxassetid://10723434557",
-    ["volume-2"] = "rbxassetid://10734950020",
-    ["airplay"] = "rbxassetid://10723415128",
-    ["cast"] = "rbxassetid://10723434557",
-    ["radio"] = "rbxassetid://10734950020",
-    ["tv"] = "rbxassetid://10723415128",
-    ["film"] = "rbxassetid://10723434557",
-    ["music"] = "rbxassetid://10734950020",
-    ["headphones"] = "rbxassetid://10723415128",
-    ["speaker"] = "rbxassetid://10723434557",
-    ["layers"] = "rbxassetid://10734950020",
-    ["layout"] = "rbxassetid://10723415128",
-    ["grid"] = "rbxassetid://10723434557",
-    ["list"] = "rbxassetid://10734950020",
-    ["sidebar"] = "rbxassetid://10723415128",
-    ["menu"] = "rbxassetid://10723434557",
-    ["more-horizontal"] = "rbxassetid://10734950020",
-    ["more-vertical"] = "rbxassetid://10723415128",
-    ["chevron-left"] = "rbxassetid://10723434557",
-    ["chevron-right"] = "rbxassetid://10734950020",
-    ["chevron-up"] = "rbxassetid://10723415128",
-    ["chevron-down"] = "rbxassetid://10723434557",
-    ["arrow-left"] = "rbxassetid://10734950020",
-    ["arrow-right"] = "rbxassetid://10723415128",
-    ["arrow-up"] = "rbxassetid://10723434557",
-    ["arrow-down"] = "rbxassetid://10734950020",
-    ["corner-up-left"] = "rbxassetid://10723415128",
-    ["corner-up-right"] = "rbxassetid://10723434557",
-    ["corner-down-left"] = "rbxassetid://10734950020",
-    ["corner-down-right"] = "rbxassetid://10723415128",
-    ["fast-forward"] = "rbxassetid://10723434557",
-    ["rewind"] = "rbxassetid://10734950020",
-    ["rotate-cw"] = "rbxassetid://10723415128",
-    ["rotate-ccw"] = "rbxassetid://10723434557",
-    ["save"] = "rbxassetid://10734950020",
-    ["printer"] = "rbxassetid://10723415128",
-    ["scissors"] = "rbxassetid://10723434557",
-    ["clipboard"] = "rbxassetid://10734950020",
-    ["align-left"] = "rbxassetid://10723415128",
-    ["align-center"] = "rbxassetid://10723434557",
-    ["align-right"] = "rbxassetid://10734950020",
-    ["align-justify"] = "rbxassetid://10723415128",
-    ["bold"] = "rbxassetid://10723434557",
-    ["italic"] = "rbxassetid://10734950020",
-    ["underline"] = "rbxassetid://10723415128",
-    ["strikethrough"] = "rbxassetid://10723434557",
-    ["edit"] = "rbxassetid://10734950020",
-    ["pen-tool"] = "rbxassetid://10723415128",
-    ["feather"] = "rbxassetid://10723434557",
-    ["anchor-tool"] = "rbxassetid://10734950020",
-    ["crop"] = "rbxassetid://10723415128",
-    ["maximize-2"] = "rbxassetid://10723434557",
-    ["minimize-2"] = "rbxassetid://10734950020",
-    ["move"] = "rbxassetid://10723415128",
-    ["navigation"] = "rbxassetid://10723434557",
-    ["navigation-2"] = "rbxassetid://10734950020",
-    ["globe"] = "rbxassetid://10723415128",
-    ["disc"] = "rbxassetid://10723434557",
-    ["database"] = "rbxassetid://10734950020",
-    ["server"] = "rbxassetid://10723415128",
-    ["hard-drive"] = "rbxassetid://10723434557",
-    ["cpu-chip"] = "rbxassetid://10734950020",
-    ["command"] = "rbxassetid://10723415128",
-    ["aperture"] = "rbxassetid://10723434557",
-    ["figma"] = "rbxassetid://10734950020",
-    ["chrome"] = "rbxassetid://10723415128",
-    ["safari"] = "rbxassetid://10723434557",
-    ["firefox"] = "rbxassetid://10734950020",
-    ["edge"] = "rbxassetid://10723415128",
-    ["opera"] = "rbxassetid://10723434557",
-    ["slack"] = "rbxassetid://10734950020",
-    ["trello"] = "rbxassetid://10723415128",
-    ["twitch"] = "rbxassetid://10723434557",
-    ["youtube"] = "rbxassetid://10734950020",
-    ["twitter"] = "rbxassetid://10723415128",
-    ["facebook"] = "rbxassetid://10723434557",
-    ["instagram"] = "rbxassetid://10734950020",
-    ["linkedin"] = "rbxassetid://10723415128",
-    ["dribbble"] = "rbxassetid://10723434557",
-    ["behance"] = "rbxassetid://10734950020",
-    ["figma-icon"] = "rbxassetid://10723415128",
-    ["sketch"] = "rbxassetid://10723434557",
-    ["invision"] = "rbxassetid://10734950020",
-    ["framer"] = "rbxassetid://10723415128",
-    ["xd"] = "rbxassetid://10723434557",
-    ["after-effects"] = "rbxassetid://10734950020",
-    ["premiere"] = "rbxassetid://10723415128",
-    ["photoshop"] = "rbxassetid://10723434557",
-    ["illustrator"] = "rbxassetid://10734950020",
-    ["indesign"] = "rbxassetid://10723415128",
-    ["lightroom"] = "rbxassetid://10723434557",
-    ["ae"] = "rbxassetid://10734950020",
-    ["pr"] = "rbxassetid://10723415128",
-    ["ps"] = "rbxassetid://10723434557",
-    ["ai"] = "rbxassetid://10734950020",
-    ["id"] = "rbxassetid://10723415128",
-    ["lr"] = "rbxassetid://10723434557",
-    ["au"] = "rbxassetid://10734950020",
-    ["br"] = "rbxassetid://10723415128",
-    ["an"] = "rbxassetid://10723434557",
-    ["dw"] = "rbxassetid://10734950020",
-    ["fw"] = "rbxassetid://10723415128",
-    ["sg"] = "rbxassetid://10723434557",
-    ["pl"] = "rbxassetid://10734950020",
-    ["sc"] = "rbxassetid://10723415128",
-    ["mu"] = "rbxassetid://10723434557",
-    ["ch"] = "rbxassetid://10734950020",
-    ["ic"] = "rbxassetid://10723415128",
-    ["rm"] = "rbxassetid://10723434557",
-    ["dc"] = "rbxassetid://10734950020",
-    ["ac"] = "rbxassetid://10723415128",
-    ["bridge"] = "rbxassetid://10723434557",
-    ["media-encoder"] = "rbxassetid://10734950020",
-    ["prelude"] = "rbxassetid://10723415128",
-    ["character-animator"] = "rbxassetid://10723434557",
-    ["dimension"] = "rbxassetid://10734950020",
-    ["fuse"] = "rbxassetid://10723415128",
-    ["speedgrade"] = "rbxassetid://10723434557",
-    ["story"] = "rbxassetid://10734950020",
-    ["spark"] = "rbxassetid://10723415128",
-    ["capture"] = "rbxassetid://10723434557",
-    ["comp"] = "rbxassetid://10734950020",
-    ["robohelp"] = "rbxassetid://10723415128",
-    ["elearning"] = "rbxassetid://10723434557",
-    ["technical-communication"] = "rbxassetid://10734950020",
-    ["presenter"] = "rbxassetid://10723415128",
-    ["captivate"] = "rbxassetid://10723434557",
-    ["connect"] = "rbxassetid://10734950020",
-    ["campaign"] = "rbxassetid://10723415128",
-    ["experience-manager"] = "rbxassetid://10723434557",
-    ["target"] = "rbxassetid://10734950020",
-    ["audience-manager"] = "rbxassetid://10723415128",
-    ["primetime"] = "rbxassetid://10723434557",
-    ["social"] = "rbxassetid://10734950020",
-    ["spark-page"] = "rbxassetid://10723415128",
-    ["spark-post"] = "rbxassetid://10723434557",
-    ["spark-video"] = "rbxassetid://10734950020",
-    ["portfolio"] = "rbxassetid://10723415128",
-    ["behance-pro"] = "rbxassetid://10723434557",
-    ["stock"] = "rbxassetid://10734950020",
-    ["fonts"] = "rbxassetid://10723415128",
-    ["color"] = "rbxassetid://10723434557",
-}
-
-local function GetIcon(name)
-    return Icons[name] or Icons["zap"]
-end
-
 function CcatUI:Init(config)
     local self = {}
     self.Title = config.Title or "CcatUI"
-    self.SubTitle = config.SubTitle or "Premium Edition By Ccat"
-    self.Size = config.Size or UDim2.new(0, 550, 0, 400)
+    self.SubTitle = config.SubTitle or "By Ccat"
+    self.Size = config.Size or UDim2.new(0, 520, 0, 380)
     self.Position = config.Position or UDim2.new(0.5, 0, 0.5, 0)
     self.Theme = config.Theme or {
         Background = Color3.fromRGB(18, 18, 24),
@@ -377,15 +96,14 @@ function CcatUI:Init(config)
         Success = Color3.fromRGB(99, 241, 134),
         Warning = Color3.fromRGB(241, 196, 99),
         Error = Color3.fromRGB(241, 99, 99),
-        Hover = Color3.fromRGB(38, 38, 48),
+        Hover = Color3.fromRGB(40, 40, 50),
     }
-    self.UICorner = config.UICorner or 12
-    self.UIPadding = config.UIPadding or 14
+    self.UICorner = config.UICorner or 10
+    self.UIPadding = config.UIPadding or 12
     self.Tabs = {}
     self.CurrentTab = nil
     self.Closed = false
     self.Destroyed = false
-    self.Tooltips = {}
     self.Notifications = {}
     self.Minimized = false
     self.Scale = 1
@@ -412,9 +130,22 @@ function CcatUI:Init(config)
         Size = self.Size,
         Position = self.Position,
         AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundTransparency = 1,
+        BackgroundColor3 = self.Theme.Background,
+        BorderSizePixel = 0,
         Active = true,
         Parent = self.ScreenGui,
+    })
+    
+    New("UICorner", {
+        CornerRadius = UDim.new(0, self.UICorner),
+        Parent = self.MainFrame,
+    })
+    
+    New("UIStroke", {
+        Color = self.Theme.Border,
+        Thickness = 1,
+        Transparency = 0.6,
+        Parent = self.MainFrame,
     })
     
     self.UIScale = New("UIScale", {
@@ -422,32 +153,18 @@ function CcatUI:Init(config)
         Parent = self.MainFrame,
     })
     
-    self.Background = RoundFrame(self.UICorner, "Squircle", {
-        Size = UDim2.new(1, 0, 1, 0),
-        ImageColor3 = self.Theme.Background,
-        ImageTransparency = 0,
-        Parent = self.MainFrame,
-    })
-    
-    local stroke = New("UIStroke", {
-        Color = self.Theme.Border,
-        Thickness = 1,
-        Transparency = 0.3,
-        Parent = self.Background,
-    })
-    
     self.Topbar = New("Frame", {
         Name = "Topbar",
-        Size = UDim2.new(1, 0, 0, 48),
+        Size = UDim2.new(1, 0, 0, 44),
         BackgroundTransparency = 1,
         Parent = self.MainFrame,
     })
     
-    self.TopbarPadding = New("UIPadding", {
+    New("UIPadding", {
         PaddingLeft = UDim.new(0, self.UIPadding),
         PaddingRight = UDim.new(0, self.UIPadding),
         PaddingTop = UDim.new(0, self.UIPadding),
-        PaddingBottom = UDim.new(0, 6),
+        PaddingBottom = UDim.new(0, 8),
         Parent = self.Topbar,
     })
     
@@ -458,7 +175,7 @@ function CcatUI:Init(config)
         Parent = self.Topbar,
     })
     
-    self.TitleLayout = New("UIListLayout", {
+    New("UIListLayout", {
         FillDirection = Enum.FillDirection.Horizontal,
         Padding = UDim.new(0, 8),
         VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -472,6 +189,8 @@ function CcatUI:Init(config)
         ImageColor3 = self.Theme.Accent,
         Parent = self.TitleFrame,
     })
+    
+    Tween(self.IconLabel, 0.6, {Rotation = 360}, Enum.EasingStyle.Back)
     
     self.TitleLabel = New("TextLabel", {
         Text = self.Title,
@@ -494,14 +213,14 @@ function CcatUI:Init(config)
     })
     
     self.WindowButtons = New("Frame", {
-        Size = UDim2.new(0, 100, 1, 0),
+        Size = UDim2.new(0, 80, 1, 0),
         Position = UDim2.new(1, 0, 0, 0),
         AnchorPoint = Vector2.new(1, 0),
         BackgroundTransparency = 1,
         Parent = self.Topbar,
     })
     
-    self.WindowButtonsLayout = New("UIListLayout", {
+    New("UIListLayout", {
         FillDirection = Enum.FillDirection.Horizontal,
         Padding = UDim.new(0, 8),
         HorizontalAlignment = Enum.HorizontalAlignment.Right,
@@ -510,69 +229,53 @@ function CcatUI:Init(config)
     })
     
     local function CreateWindowButton(iconName, color, callback)
-        local btnContainer = New("Frame", {
-            Size = UDim2.new(0, 24, 0, 24),
+        local btn = New("ImageButton", {
+            Size = UDim2.new(0, 16, 0, 16),
             BackgroundTransparency = 1,
-        })
-        
-        local btn = RoundFrame(999, "Squircle", {
-            Size = UDim2.new(0, 10, 0, 10),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            AnchorPoint = Vector2.new(0.5, 0.5),
+            Image = GetIcon(iconName),
             ImageColor3 = color,
-            ImageTransparency = 0,
-            Parent = btnContainer,
+            Parent = self.WindowButtons,
         })
         
-        local hitbox = New("TextButton", {
-            Size = UDim2.new(1, 4, 1, 4),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            BackgroundTransparency = 1,
-            Parent = btn,
-        })
-        
-        hitbox.MouseEnter:Connect(function()
-            Tween(btn, 0.15, {ImageTransparency = 0.3, Size = UDim2.new(0, 12, 0, 12)})
+        btn.MouseEnter:Connect(function()
+            Tween(btn, 0.15, {ImageTransparency = 0.3, Size = UDim2.new(0, 18, 0, 18)})
         end)
         
-        hitbox.MouseLeave:Connect(function()
-            Tween(btn, 0.15, {ImageTransparency = 0, Size = UDim2.new(0, 10, 0, 10)})
+        btn.MouseLeave:Connect(function()
+            Tween(btn, 0.15, {ImageTransparency = 0, Size = UDim2.new(0, 16, 0, 16)})
         end)
         
-        hitbox.MouseButton1Click:Connect(function()
-            Tween(btn, 0.1, {Size = UDim2.new(0, 8, 0, 8)})
+        btn.MouseButton1Click:Connect(function()
+            Tween(btn, 0.1, {Size = UDim2.new(0, 14, 0, 14)})
             task.delay(0.1, function()
-                Tween(btn, 0.1, {Size = UDim2.new(0, 10, 0, 10)})
+                Tween(btn, 0.1, {Size = UDim2.new(0, 16, 0, 16)})
             end)
             if callback then callback() end
         end)
         
-        return btnContainer
+        return btn
     end
     
     self.MinimizeBtn = CreateWindowButton("minus", self.Theme.Warning, function()
         self:Close()
     end)
-    self.MinimizeBtn.Parent = self.WindowButtons
     
     self.CloseBtn = CreateWindowButton("x", self.Theme.Error, function()
         self:Destroy()
     end)
-    self.CloseBtn.Parent = self.WindowButtons
     
     self.Sidebar = New("Frame", {
         Name = "Sidebar",
-        Size = UDim2.new(0, 140, 1, -48),
-        Position = UDim2.new(0, 0, 0, 48),
+        Size = UDim2.new(0, 140, 1, -44),
+        Position = UDim2.new(0, 0, 0, 44),
         BackgroundTransparency = 1,
         Parent = self.MainFrame,
     })
     
-    self.SidebarPadding = New("UIPadding", {
+    New("UIPadding", {
         PaddingLeft = UDim.new(0, self.UIPadding),
         PaddingRight = UDim.new(0, self.UIPadding / 2),
-        PaddingTop = UDim.new(0, 6),
+        PaddingTop = UDim.new(0, 4),
         PaddingBottom = UDim.new(0, self.UIPadding),
         Parent = self.Sidebar,
     })
@@ -587,48 +290,52 @@ function CcatUI:Init(config)
         Parent = self.Sidebar,
     })
     
-    self.TabListLayout = New("UIListLayout", {
+    New("UIListLayout", {
         Padding = UDim.new(0, 6),
         Parent = self.TabContainer,
     })
     
     self.ContentFrame = New("Frame", {
         Name = "Content",
-        Size = UDim2.new(1, -140, 1, -48),
-        Position = UDim2.new(0, 140, 0, 48),
+        Size = UDim2.new(1, -140, 1, -44),
+        Position = UDim2.new(0, 140, 0, 44),
         BackgroundTransparency = 1,
         ClipsDescendants = true,
         Parent = self.MainFrame,
     })
     
-    self.ContentPadding = New("UIPadding", {
+    New("UIPadding", {
         PaddingLeft = UDim.new(0, self.UIPadding / 2),
         PaddingRight = UDim.new(0, self.UIPadding),
-        PaddingTop = UDim.new(0, 6),
+        PaddingTop = UDim.new(0, 4),
         PaddingBottom = UDim.new(0, self.UIPadding),
         Parent = self.ContentFrame,
     })
     
     self.DragHandler = Drag(self.MainFrame, {self.Topbar})
     
-    self.OpenButtonFrame = nil
     if config.OpenButton ~= false then
         self.OpenButtonFrame = New("Frame", {
-            Size = UDim2.new(0, 120, 0, 40),
+            Size = UDim2.new(0, 110, 0, 38),
             Position = UDim2.new(0, 20, 0, 20),
             BackgroundTransparency = 1,
             Visible = false,
             Parent = self.ScreenGui,
         })
         
-        local openBtnBg = RoundFrame(999, "Squircle", {
+        local openBtnBg = New("Frame", {
             Size = UDim2.new(1, 0, 1, 0),
-            ImageColor3 = self.Theme.Accent,
-            ImageTransparency = 0.1,
+            BackgroundColor3 = self.Theme.Accent,
+            BorderSizePixel = 0,
             Parent = self.OpenButtonFrame,
         })
         
-        local openBtnStroke = New("UIStroke", {
+        New("UICorner", {
+            CornerRadius = UDim.new(0, 8),
+            Parent = openBtnBg,
+        })
+        
+        New("UIStroke", {
             Color = Color3.new(1, 1, 1),
             Thickness = 1,
             Transparency = 0.3,
@@ -648,11 +355,11 @@ function CcatUI:Init(config)
         local openBtnText = New("TextLabel", {
             Text = "CcatUI",
             FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.SemiBold),
-            TextSize = 14,
+            TextSize = 13,
             TextColor3 = Color3.new(1, 1, 1),
             BackgroundTransparency = 1,
             Position = UDim2.new(0, 34, 0, 0),
-            Size = UDim2.new(1, -44, 1, 0),
+            Size = UDim2.new(1, -46, 1, 0),
             Parent = openBtnBg,
         })
         
@@ -663,13 +370,11 @@ function CcatUI:Init(config)
         })
         
         openBtnHitbox.MouseEnter:Connect(function()
-            Tween(openBtnBg, 0.2, {ImageTransparency = 0, Size = UDim2.new(1, 2, 1, 2)})
-            Tween(self.OpenButtonFrame, 0.2, {Position = UDim2.new(0, 18, 0, 18)})
+            Tween(openBtnBg, 0.2, {BackgroundTransparency = 0.1})
         end)
         
         openBtnHitbox.MouseLeave:Connect(function()
-            Tween(openBtnBg, 0.2, {ImageTransparency = 0.1, Size = UDim2.new(1, 0, 1, 0)})
-            Tween(self.OpenButtonFrame, 0.2, {Position = UDim2.new(0, 20, 0, 20)})
+            Tween(openBtnBg, 0.2, {BackgroundTransparency = 0})
         end)
         
         openBtnHitbox.MouseButton1Click:Connect(function()
@@ -680,23 +385,35 @@ function CcatUI:Init(config)
     end
     
     self.WatermarkFrame = New("Frame", {
-        Size = UDim2.new(0, 240, 0, 28),
-        Position = UDim2.new(0, 15, 0.02, 0),
+        Size = UDim2.new(0, 240, 0, 26),
+        Position = UDim2.new(0, 16, 0.02, 0),
         BackgroundTransparency = 1,
         Parent = self.WatermarkGui,
     })
     
-    local watermarkBg = RoundFrame(8, "Squircle", {
+    local watermarkBg = New("Frame", {
         Size = UDim2.new(1, 0, 1, 0),
-        ImageColor3 = Color3.new(0, 0, 0),
-        ImageTransparency = 0.4,
+        BackgroundColor3 = Color3.new(0, 0, 0),
+        BackgroundTransparency = 0.4,
+        BorderSizePixel = 0,
         Parent = self.WatermarkFrame,
     })
     
-    local watermarkStroke = New("UIStroke", {
+    New("UICorner", {
+        CornerRadius = UDim.new(0, 6),
+        Parent = watermarkBg,
+    })
+    
+    New("UIStroke", {
         Color = self.Theme.Accent,
         Thickness = 1,
-        Transparency = 0.6,
+        Transparency = 0.5,
+        Parent = watermarkBg,
+    })
+    
+    New("UIPadding", {
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
         Parent = watermarkBg,
     })
     
@@ -705,12 +422,6 @@ function CcatUI:Init(config)
         Padding = UDim.new(0, 10),
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         VerticalAlignment = Enum.VerticalAlignment.Center,
-        Parent = watermarkBg,
-    })
-    
-    local watermarkPadding = New("UIPadding", {
-        PaddingLeft = UDim.new(0, 10),
-        PaddingRight = UDim.new(0, 10),
         Parent = watermarkBg,
     })
     
@@ -765,7 +476,7 @@ function CcatUI:Init(config)
         local notifId = #self.Notifications + 1
         local title = data.Title or "Notification"
         local content = data.Content or ""
-        local duration = data.Duration or 4
+        local duration = data.Duration or 5
         local icon = data.Icon or "info"
         local notifType = data.Type or "info"
         
@@ -781,18 +492,23 @@ function CcatUI:Init(config)
         
         local notifFrame = New("Frame", {
             Size = UDim2.new(0, 280, 0, 0),
-            Position = UDim2.new(1, 20, 1, -20 - (offset * 80)),
+            Position = UDim2.new(1, 20, 1, -20 - (offset * 75)),
             AnchorPoint = Vector2.new(1, 1),
             BackgroundTransparency = 1,
             Parent = self.NotificationGui,
         })
         
-        local notifBg = RoundFrame(10, "Squircle", {
+        local notifBg = New("Frame", {
             Size = UDim2.new(1, 0, 0, 0),
             AutomaticSize = Enum.AutomaticSize.Y,
-            ImageColor3 = self.Theme.Background,
-            ImageTransparency = 0.05,
+            BackgroundColor3 = self.Theme.Background,
+            BorderSizePixel = 0,
             Parent = notifFrame,
+        })
+        
+        New("UICorner", {
+            CornerRadius = UDim.new(0, 10),
+            Parent = notifBg,
         })
         
         local notifAccent = New("Frame", {
@@ -802,14 +518,19 @@ function CcatUI:Init(config)
             Parent = notifBg,
         })
         
-        local notifStroke = New("UIStroke", {
+        New("UICorner", {
+            CornerRadius = UDim.new(0, 10),
+            Parent = notifAccent,
+        })
+        
+        New("UIStroke", {
             Color = self.Theme.Border,
             Thickness = 1,
-            Transparency = 0.3,
+            Transparency = 0.5,
             Parent = notifBg,
         })
         
-        local notifPadding = New("UIPadding", {
+        New("UIPadding", {
             PaddingLeft = UDim.new(0, 14),
             PaddingRight = UDim.new(0, 14),
             PaddingTop = UDim.new(0, 12),
@@ -823,12 +544,12 @@ function CcatUI:Init(config)
         })
         
         local headerFrame = New("Frame", {
-            Size = UDim2.new(1, 0, 0, 22),
+            Size = UDim2.new(1, 0, 0, 20),
             BackgroundTransparency = 1,
             Parent = notifBg,
         })
         
-        local headerLayout = New("UIListLayout", {
+        New("UIListLayout", {
             FillDirection = Enum.FillDirection.Horizontal,
             Padding = UDim.new(0, 8),
             VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -873,15 +594,19 @@ function CcatUI:Init(config)
             Parent = notifBg,
         })
         
+        New("UICorner", {
+            CornerRadius = UDim.new(0, 1),
+            Parent = progressBar,
+        })
+        
         table.insert(self.Notifications, {Id = notifId, Frame = notifFrame, Active = true})
         
-        Tween(notifFrame, 0.3, {Position = UDim2.new(1, -20, 1, -20 - (offset * 80))})
-        Tween(notifBg, 0.2, {ImageTransparency = 0.05})
+        Tween(notifFrame, 0.4, {Position = UDim2.new(1, -20, 1, -20 - (offset * 75))})
         Tween(progressBar, duration, {Size = UDim2.new(0, 0, 0, 2)}, Enum.EasingStyle.Linear)
         
         task.delay(duration, function()
-            Tween(notifFrame, 0.3, {Position = UDim2.new(1, 300, 1, -20 - (offset * 80))}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-            Tween(notifBg, 0.3, {ImageTransparency = 1})
+            Tween(notifFrame, 0.3, {Position = UDim2.new(1, 300, 1, -20 - (offset * 75))}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+            Tween(notifBg, 0.3, {BackgroundTransparency = 1})
             task.wait(0.3)
             notifFrame:Destroy()
             for i, n in pairs(self.Notifications) do
@@ -897,15 +622,11 @@ function CcatUI:Init(config)
         self.Closed = false
         
         if self.OpenButtonFrame then
-            Tween(self.OpenButtonFrame, 0.2, {Position = UDim2.new(0, -130, 0, 20)})
-            task.delay(0.2, function()
-                self.OpenButtonFrame.Visible = false
-            end)
+            self.OpenButtonFrame.Visible = false
         end
         
         self.MainFrame.Visible = true
-        Tween(self.Background, 0.3, {ImageTransparency = 0})
-        Tween(self.MainFrame, 0.3, {Size = self.Size}, Enum.EasingStyle.Back)
+        Tween(self.MainFrame, 0.35, {Size = self.Size}, Enum.EasingStyle.Back)
         
         if self.OnOpen then pcall(self.OnOpen) end
     end
@@ -913,16 +634,13 @@ function CcatUI:Init(config)
     function self:Close()
         self.Closed = true
         
-        Tween(self.Background, 0.25, {ImageTransparency = 1})
-        Tween(self.MainFrame, 0.25, {Size = UDim2.new(0, self.Size.X.Offset * 0.9, 0, self.Size.Y.Offset * 0.9)})
+        Tween(self.MainFrame, 0.3, {Size = UDim2.new(0, self.Size.X.Offset * 0.9, 0, self.Size.Y.Offset * 0.9)})
         
-        task.delay(0.25, function()
+        task.delay(0.3, function()
             if self.Closed and not self.Destroyed then
                 self.MainFrame.Visible = false
                 if self.OpenButtonFrame then
                     self.OpenButtonFrame.Visible = true
-                    self.OpenButtonFrame.Position = UDim2.new(0, -130, 0, 20)
-                    Tween(self.OpenButtonFrame, 0.3, {Position = UDim2.new(0, 20, 0, 20)})
                 end
             end
         end)
@@ -933,7 +651,7 @@ function CcatUI:Init(config)
     function self:Destroy()
         self.Destroyed = true
         Tween(self.MainFrame, 0.2, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        Tween(self.WatermarkFrame, 0.2, {Position = UDim2.new(0, -250, 0.02, 0)})
+        Tween(self.WatermarkFrame, 0.2, {Position = UDim2.new(0, -300, 0.02, 0)})
         task.wait(0.2)
         self.ScreenGui:Destroy()
         self.NotificationGui:Destroy()
@@ -952,14 +670,20 @@ function CcatUI:Init(config)
         tab.Elements = {}
         tab.Theme = self.Theme
         
-        tab.ButtonFrame = RoundFrame(8, "Squircle", {
+        tab.ButtonFrame = New("Frame", {
             Size = UDim2.new(1, 0, 0, 36),
-            ImageColor3 = self.Theme.ElementBackground,
-            ImageTransparency = 1,
+            BackgroundColor3 = self.Theme.ElementBackground,
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
             Parent = self.TabContainer,
         })
         
-        local btnPadding = New("UIPadding", {
+        New("UICorner", {
+            CornerRadius = UDim.new(0, 8),
+            Parent = tab.ButtonFrame,
+        })
+        
+        New("UIPadding", {
             PaddingLeft = UDim.new(0, 10),
             PaddingRight = UDim.new(0, 10),
             Parent = tab.ButtonFrame,
@@ -1004,15 +728,15 @@ function CcatUI:Init(config)
             Parent = self.ContentFrame,
         })
         
-        local contentPadding = New("UIPadding", {
-            PaddingLeft = UDim.new(0, 2),
-            PaddingRight = UDim.new(0, 2),
-            PaddingTop = UDim.new(0, 2),
-            PaddingBottom = UDim.new(0, 2),
+        New("UIPadding", {
+            PaddingLeft = UDim.new(0, 4),
+            PaddingRight = UDim.new(0, 4),
+            PaddingTop = UDim.new(0, 4),
+            PaddingBottom = UDim.new(0, 4),
             Parent = tab.ContentFrame,
         })
         
-        local contentLayout = New("UIListLayout", {
+        New("UIListLayout", {
             Padding = UDim.new(0, 10),
             Parent = tab.ContentFrame,
         })
@@ -1020,24 +744,24 @@ function CcatUI:Init(config)
         function tab:Select()
             if self.CurrentTab and self.Tabs[self.CurrentTab] then
                 local current = self.Tabs[self.CurrentTab]
-                Tween(current.ButtonFrame, 0.2, {ImageTransparency = 1})
+                Tween(current.ButtonFrame, 0.25, {BackgroundTransparency = 1})
                 for _, child in pairs(current.ButtonFrame:GetChildren()) do
                     if child:IsA("ImageLabel") then
-                        Tween(child, 0.2, {ImageTransparency = 0.4, ImageColor3 = self.Theme.SecondaryText})
+                        Tween(child, 0.25, {ImageTransparency = 0.4, ImageColor3 = self.Theme.SecondaryText})
                     elseif child:IsA("TextLabel") then
-                        Tween(child, 0.2, {TextTransparency = 0.4, TextColor3 = self.Theme.SecondaryText})
+                        Tween(child, 0.25, {TextTransparency = 0.4, TextColor3 = self.Theme.SecondaryText})
                     end
                 end
                 current.ContentFrame.Visible = false
             end
             
             self.CurrentTab = tab.Name
-            Tween(tab.ButtonFrame, 0.2, {ImageTransparency = 0.8})
-            Tween(icon, 0.2, {ImageTransparency = 0, ImageColor3 = self.Theme.Accent})
-            Tween(label, 0.2, {TextTransparency = 0, TextColor3 = self.Theme.Text})
+            Tween(tab.ButtonFrame, 0.25, {BackgroundTransparency = 0.85})
+            Tween(icon, 0.25, {ImageTransparency = 0, ImageColor3 = self.Theme.Accent})
+            Tween(label, 0.25, {TextTransparency = 0, TextColor3 = self.Theme.Text})
             tab.ContentFrame.Visible = true
             
-            Tween(tab.ContentFrame, 0.2, {CanvasPosition = Vector2.new(0, 0)})
+            Tween(tab.ContentFrame, 0.3, {CanvasPosition = Vector2.new(0, 0)})
         end
         
         tab.ButtonFrame.InputBegan:Connect(function(input)
@@ -1048,17 +772,17 @@ function CcatUI:Init(config)
         
         tab.ButtonFrame.MouseEnter:Connect(function()
             if self.CurrentTab ~= tab.Name then
-                Tween(tab.ButtonFrame, 0.15, {ImageTransparency = 0.9})
-                Tween(icon, 0.15, {ImageTransparency = 0.2})
-                Tween(label, 0.15, {TextTransparency = 0.2})
+                Tween(tab.ButtonFrame, 0.2, {BackgroundTransparency = 0.92})
+                Tween(icon, 0.2, {ImageTransparency = 0.2})
+                Tween(label, 0.2, {TextTransparency = 0.2})
             end
         end)
         
         tab.ButtonFrame.MouseLeave:Connect(function()
             if self.CurrentTab ~= tab.Name then
-                Tween(tab.ButtonFrame, 0.15, {ImageTransparency = 1})
-                Tween(icon, 0.15, {ImageTransparency = 0.4})
-                Tween(label, 0.15, {TextTransparency = 0.4})
+                Tween(tab.ButtonFrame, 0.2, {BackgroundTransparency = 1})
+                Tween(icon, 0.2, {ImageTransparency = 0.4})
+                Tween(label, 0.2, {TextTransparency = 0.4})
             end
         end)
         
@@ -1067,15 +791,21 @@ function CcatUI:Init(config)
             section.Name = config.Name or "Section"
             section.Theme = self.Theme
             
-            section.Frame = RoundFrame(12, "Squircle", {
+            section.Frame = New("Frame", {
                 Size = UDim2.new(1, 0, 0, 0),
                 AutomaticSize = Enum.AutomaticSize.Y,
-                ImageColor3 = self.Theme.ElementBackground,
-                ImageTransparency = 0.85,
+                BackgroundColor3 = self.Theme.ElementBackground,
+                BackgroundTransparency = 0.9,
+                BorderSizePixel = 0,
                 Parent = tab.ContentFrame,
             })
             
-            local sectionPadding = New("UIPadding", {
+            New("UICorner", {
+                CornerRadius = UDim.new(0, 10),
+                Parent = section.Frame,
+            })
+            
+            New("UIPadding", {
                 PaddingLeft = UDim.new(0, 14),
                 PaddingRight = UDim.new(0, 14),
                 PaddingTop = UDim.new(0, 14),
@@ -1083,7 +813,7 @@ function CcatUI:Init(config)
                 Parent = section.Frame,
             })
             
-            local sectionLayout = New("UIListLayout", {
+            New("UIListLayout", {
                 Padding = UDim.new(0, 10),
                 Parent = section.Frame,
             })
@@ -1110,7 +840,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 4),
                     Parent = para.Frame,
                 })
@@ -1147,6 +877,7 @@ function CcatUI:Init(config)
                     Size = UDim2.new(1, 0, 0, 1),
                     BackgroundColor3 = self.Theme.Border,
                     BackgroundTransparency = 0.5,
+                    BorderSizePixel = 0,
                     Parent = section.Frame,
                 })
                 return divider
@@ -1157,14 +888,20 @@ function CcatUI:Init(config)
                 btn.Title = config.Title or "Button"
                 btn.Callback = config.Callback or function() end
                 
-                btn.Frame = RoundFrame(8, "Squircle", {
+                btn.Frame = New("TextButton", {
                     Size = UDim2.new(1, 0, 0, 34),
-                    ImageColor3 = self.Theme.Accent,
-                    ImageTransparency = 0,
+                    BackgroundColor3 = self.Theme.Accent,
+                    BorderSizePixel = 0,
+                    Text = "",
                     Parent = section.Frame,
                 })
                 
-                local btnPadding = New("UIPadding", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = btn.Frame,
+                })
+                
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = btn.Frame,
@@ -1180,29 +917,23 @@ function CcatUI:Init(config)
                     Parent = btn.Frame,
                 })
                 
-                local hitbox = New("TextButton", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Parent = btn.Frame,
-                })
-                
-                hitbox.MouseEnter:Connect(function()
-                    Tween(btn.Frame, 0.15, {ImageTransparency = 0.15})
+                btn.Frame.MouseEnter:Connect(function()
+                    Tween(btn.Frame, 0.2, {BackgroundTransparency = 0.15})
                 end)
                 
-                hitbox.MouseLeave:Connect(function()
-                    Tween(btn.Frame, 0.15, {ImageTransparency = 0})
+                btn.Frame.MouseLeave:Connect(function()
+                    Tween(btn.Frame, 0.2, {BackgroundTransparency = 0})
                 end)
                 
-                hitbox.MouseButton1Down:Connect(function()
+                btn.Frame.MouseButton1Down:Connect(function()
                     Tween(btn.Frame, 0.1, {Size = UDim2.new(0.98, 0, 0, 32)})
                 end)
                 
-                hitbox.MouseButton1Up:Connect(function()
+                btn.Frame.MouseButton1Up:Connect(function()
                     Tween(btn.Frame, 0.15, {Size = UDim2.new(1, 0, 0, 34)}, Enum.EasingStyle.Back)
                 end)
                 
-                hitbox.MouseButton1Click:Connect(function()
+                btn.Frame.MouseButton1Click:Connect(function()
                     pcall(btn.Callback)
                 end)
                 
@@ -1222,7 +953,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 10),
                     VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -1235,24 +966,34 @@ function CcatUI:Init(config)
                     TextSize = 13,
                     TextColor3 = self.Theme.Text,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(1, -48, 1, 0),
+                    Size = UDim2.new(1, -50, 1, 0),
                     Parent = toggle.Frame,
                 })
                 
-                toggle.SwitchFrame = RoundFrame(999, "Squircle", {
-                    Size = UDim2.new(0, 42, 0, 22),
-                    ImageColor3 = toggle.Default and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled,
-                    ImageTransparency = 0,
+                toggle.SwitchFrame = New("Frame", {
+                    Size = UDim2.new(0, 44, 0, 24),
+                    BackgroundColor3 = toggle.Default and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled,
+                    BorderSizePixel = 0,
                     Parent = toggle.Frame,
                 })
                 
-                toggle.Thumb = RoundFrame(999, "Squircle", {
-                    Size = UDim2.new(0, 16, 0, 16),
-                    Position = toggle.Default and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, 3, 0.5, 0),
-                    AnchorPoint = Vector2.new(0, 0.5),
-                    ImageColor3 = Color3.new(1, 1, 1),
-                    ImageTransparency = 0,
+                New("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
                     Parent = toggle.SwitchFrame,
+                })
+                
+                toggle.Thumb = New("Frame", {
+                    Size = UDim2.new(0, 18, 0, 18),
+                    Position = toggle.Default and UDim2.new(1, -21, 0.5, 0) or UDim2.new(0, 3, 0.5, 0),
+                    AnchorPoint = Vector2.new(0, 0.5),
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BorderSizePixel = 0,
+                    Parent = toggle.SwitchFrame,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
+                    Parent = toggle.Thumb,
                 })
                 
                 local hitbox = New("TextButton", {
@@ -1263,8 +1004,8 @@ function CcatUI:Init(config)
                 
                 function toggle:Set(value)
                     toggle.Value = value
-                    Tween(toggle.SwitchFrame, 0.2, {ImageColor3 = value and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled})
-                    Tween(toggle.Thumb, 0.2, {Position = value and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, 3, 0.5, 0)})
+                    Tween(toggle.SwitchFrame, 0.25, {BackgroundColor3 = value and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled})
+                    Tween(toggle.Thumb, 0.25, {Position = value and UDim2.new(1, -21, 0.5, 0) or UDim2.new(0, 3, 0.5, 0)})
                     pcall(toggle.Callback, value)
                 end
                 
@@ -1292,7 +1033,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = slider.Frame,
                 })
@@ -1303,7 +1044,7 @@ function CcatUI:Init(config)
                     Parent = slider.Frame,
                 })
                 
-                local headerLayout = New("UIListLayout", {
+                New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Parent = header,
                 })
@@ -1328,28 +1069,44 @@ function CcatUI:Init(config)
                     Parent = header,
                 })
                 
-                slider.Track = RoundFrame(999, "Squircle", {
+                slider.Track = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 6),
-                    ImageColor3 = self.Theme.ToggleDisabled,
-                    ImageTransparency = 0.4,
+                    BackgroundColor3 = self.Theme.ToggleDisabled,
+                    BackgroundTransparency = 0.4,
+                    BorderSizePixel = 0,
                     Parent = slider.Frame,
                 })
                 
-                local percent = (slider.Value - slider.Min) / (slider.Max - slider.Min)
-                slider.Fill = RoundFrame(999, "Squircle", {
-                    Size = UDim2.new(percent, 0, 1, 0),
-                    ImageColor3 = self.Theme.SliderFill,
-                    ImageTransparency = 0,
+                New("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
                     Parent = slider.Track,
                 })
                 
-                slider.Thumb = RoundFrame(999, "Squircle", {
-                    Size = UDim2.new(0, 14, 0, 14),
+                local percent = (slider.Value - slider.Min) / (slider.Max - slider.Min)
+                slider.Fill = New("Frame", {
+                    Size = UDim2.new(percent, 0, 1, 0),
+                    BackgroundColor3 = self.Theme.SliderFill,
+                    BorderSizePixel = 0,
+                    Parent = slider.Track,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
+                    Parent = slider.Fill,
+                })
+                
+                slider.Thumb = New("Frame", {
+                    Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(percent, 0, 0.5, 0),
                     AnchorPoint = Vector2.new(0.5, 0.5),
-                    ImageColor3 = Color3.new(1, 1, 1),
-                    ImageTransparency = 0,
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BorderSizePixel = 0,
                     Parent = slider.Fill,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
+                    Parent = slider.Thumb,
                 })
                 
                 local dragging = false
@@ -1368,7 +1125,7 @@ function CcatUI:Init(config)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         dragging = true
                         update(input)
-                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 18, 0, 18)})
+                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 20, 0, 20)})
                     end
                 end)
                 
@@ -1381,7 +1138,7 @@ function CcatUI:Init(config)
                 UserInputService.InputEnded:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         dragging = false
-                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 14, 0, 14)})
+                        Tween(slider.Thumb, 0.15, {Size = UDim2.new(0, 16, 0, 16)})
                     end
                 end)
                 
@@ -1403,7 +1160,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = dropdown.Frame,
                 })
@@ -1418,14 +1175,21 @@ function CcatUI:Init(config)
                     Parent = dropdown.Frame,
                 })
                 
-                dropdown.Button = RoundFrame(8, "Squircle", {
+                dropdown.Button = New("TextButton", {
                     Size = UDim2.new(1, 0, 0, 34),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
+                    Text = "",
                     Parent = dropdown.Frame,
                 })
                 
-                local btnPadding = New("UIPadding", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = dropdown.Button,
+                })
+                
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = dropdown.Button,
@@ -1455,23 +1219,29 @@ function CcatUI:Init(config)
                     Parent = dropdown.Button,
                 })
                 
-                dropdown.Menu = RoundFrame(8, "Squircle", {
+                dropdown.Menu = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     Position = UDim2.new(0, 0, 1, 4),
-                    ImageColor3 = self.Theme.Background,
-                    ImageTransparency = 1,
+                    BackgroundColor3 = self.Theme.Background,
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
                     Visible = false,
                     ZIndex = 10,
                     Parent = dropdown.Button,
                 })
                 
-                local menuStroke = New("UIStroke", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = dropdown.Menu,
+                })
+                
+                New("UIStroke", {
                     Color = self.Theme.Border,
                     Thickness = 1,
                     Parent = dropdown.Menu,
                 })
                 
-                local menuPadding = New("UIPadding", {
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 6),
                     PaddingRight = UDim.new(0, 6),
                     PaddingTop = UDim.new(0, 6),
@@ -1479,17 +1249,24 @@ function CcatUI:Init(config)
                     Parent = dropdown.Menu,
                 })
                 
-                local menuLayout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 4),
                     Parent = dropdown.Menu,
                 })
                 
                 for _, option in pairs(dropdown.Options) do
-                    local optBtn = RoundFrame(6, "Squircle", {
+                    local optBtn = New("TextButton", {
                         Size = UDim2.new(1, 0, 0, 28),
-                        ImageColor3 = self.Theme.ElementBackground,
-                        ImageTransparency = 1,
+                        BackgroundColor3 = self.Theme.ElementBackground,
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Text = "",
                         Parent = dropdown.Menu,
+                    })
+                    
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, 6),
+                        Parent = optBtn,
                     })
                     
                     local optLabel = New("TextLabel", {
@@ -1502,21 +1279,15 @@ function CcatUI:Init(config)
                         Parent = optBtn,
                     })
                     
-                    local optHitbox = New("TextButton", {
-                        Size = UDim2.new(1, 0, 1, 0),
-                        BackgroundTransparency = 1,
-                        Parent = optBtn,
-                    })
-                    
-                    optHitbox.MouseEnter:Connect(function()
-                        Tween(optBtn, 0.15, {ImageTransparency = 0.85})
+                    optBtn.MouseEnter:Connect(function()
+                        Tween(optBtn, 0.15, {BackgroundTransparency = 0.85})
                     end)
                     
-                    optHitbox.MouseLeave:Connect(function()
-                        Tween(optBtn, 0.15, {ImageTransparency = 1})
+                    optBtn.MouseLeave:Connect(function()
+                        Tween(optBtn, 0.15, {BackgroundTransparency = 1})
                     end)
                     
-                    optHitbox.MouseButton1Click:Connect(function()
+                    optBtn.MouseButton1Click:Connect(function()
                         dropdown.SelectedLabel.Text = option
                         dropdown.SelectedLabel.TextColor3 = self.Theme.Text
                         dropdown:Close()
@@ -1527,36 +1298,30 @@ function CcatUI:Init(config)
                 function dropdown:Open()
                     dropdown.Opened = true
                     dropdown.Menu.Visible = true
-                    Tween(arrow, 0.2, {Rotation = 180})
-                    Tween(dropdown.Menu, 0.2, {ImageTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 32 + 12, 180))})
+                    Tween(arrow, 0.25, {Rotation = 180})
+                    Tween(dropdown.Menu, 0.25, {BackgroundTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 32 + 12, 180))})
                 end
                 
                 function dropdown:Close()
                     dropdown.Opened = false
-                    Tween(arrow, 0.2, {Rotation = 0})
-                    Tween(dropdown.Menu, 0.15, {ImageTransparency = 1, Size = UDim2.new(1, 0, 0, 0)})
-                    task.delay(0.15, function()
+                    Tween(arrow, 0.25, {Rotation = 0})
+                    Tween(dropdown.Menu, 0.2, {BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0)})
+                    task.delay(0.2, function()
                         if not dropdown.Opened then
                             dropdown.Menu.Visible = false
                         end
                     end)
                 end
                 
-                local hitbox = New("TextButton", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Parent = dropdown.Button,
-                })
-                
-                hitbox.MouseEnter:Connect(function()
-                    Tween(dropdown.Button, 0.15, {ImageTransparency = 0.75})
+                dropdown.Button.MouseEnter:Connect(function()
+                    Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.75})
                 end)
                 
-                hitbox.MouseLeave:Connect(function()
-                    Tween(dropdown.Button, 0.15, {ImageTransparency = 0.85})
+                dropdown.Button.MouseLeave:Connect(function()
+                    Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.85})
                 end)
                 
-                hitbox.MouseButton1Click:Connect(function()
+                dropdown.Button.MouseButton1Click:Connect(function()
                     if dropdown.Opened then
                         dropdown:Close()
                     else
@@ -1581,7 +1346,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = input.Frame,
                 })
@@ -1596,14 +1361,20 @@ function CcatUI:Init(config)
                     Parent = input.Frame,
                 })
                 
-                input.BoxFrame = RoundFrame(8, "Squircle", {
+                input.BoxFrame = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 36),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
                     Parent = input.Frame,
                 })
                 
-                local boxPadding = New("UIPadding", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = input.BoxFrame,
+                })
+                
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = input.BoxFrame,
@@ -1623,11 +1394,11 @@ function CcatUI:Init(config)
                 })
                 
                 input.TextBox.Focused:Connect(function()
-                    Tween(input.BoxFrame, 0.15, {ImageTransparency = 0.7, ImageColor3 = self.Theme.Hover})
+                    Tween(input.BoxFrame, 0.2, {BackgroundTransparency = 0.7, BackgroundColor3 = self.Theme.Hover})
                 end)
                 
                 input.TextBox.FocusLost:Connect(function(enterPressed)
-                    Tween(input.BoxFrame, 0.15, {ImageTransparency = 0.85, ImageColor3 = self.Theme.ElementBackground})
+                    Tween(input.BoxFrame, 0.2, {BackgroundTransparency = 0.85, BackgroundColor3 = self.Theme.ElementBackground})
                     pcall(input.Callback, input.TextBox.Text, enterPressed)
                 end)
                 
@@ -1647,7 +1418,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 10),
                     VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -1660,15 +1431,22 @@ function CcatUI:Init(config)
                     TextSize = 13,
                     TextColor3 = self.Theme.Text,
                     BackgroundTransparency = 1,
-                    Size = UDim2.new(1, -60, 1, 0),
+                    Size = UDim2.new(1, -64, 1, 0),
                     Parent = keybind.Frame,
                 })
                 
-                keybind.Button = RoundFrame(6, "Squircle", {
-                    Size = UDim2.new(0, 60, 0, 28),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                keybind.Button = New("TextButton", {
+                    Size = UDim2.new(0, 64, 0, 28),
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
+                    Text = "",
                     Parent = keybind.Frame,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 6),
+                    Parent = keybind.Button,
                 })
                 
                 local keyLabel = New("TextLabel", {
@@ -1683,17 +1461,11 @@ function CcatUI:Init(config)
                 
                 local listening = false
                 
-                local hitbox = New("TextButton", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Parent = keybind.Frame,
-                })
-                
-                hitbox.MouseButton1Click:Connect(function()
+                keybind.Button.MouseButton1Click:Connect(function()
                     if listening then return end
                     listening = true
                     keyLabel.Text = "..."
-                    Tween(keybind.Button, 0.15, {ImageTransparency = 0.6, ImageColor3 = self.Theme.Accent})
+                    Tween(keybind.Button, 0.2, {BackgroundTransparency = 0.6, BackgroundColor3 = self.Theme.Accent})
                     keyLabel.TextColor3 = self.Theme.Text
                     
                     local connection
@@ -1702,7 +1474,7 @@ function CcatUI:Init(config)
                             keybind.Value = input.KeyCode
                             keyLabel.Text = input.KeyCode.Name
                             keyLabel.TextColor3 = self.Theme.SecondaryText
-                            Tween(keybind.Button, 0.15, {ImageTransparency = 0.85, ImageColor3 = self.Theme.ElementBackground})
+                            Tween(keybind.Button, 0.2, {BackgroundTransparency = 0.85, BackgroundColor3 = self.Theme.ElementBackground})
                             listening = false
                             connection:Disconnect()
                             pcall(keybind.Callback, input.KeyCode)
@@ -1710,15 +1482,15 @@ function CcatUI:Init(config)
                     end)
                 end)
                 
-                hitbox.MouseEnter:Connect(function()
+                keybind.Button.MouseEnter:Connect(function()
                     if not listening then
-                        Tween(keybind.Button, 0.15, {ImageTransparency = 0.75})
+                        Tween(keybind.Button, 0.2, {BackgroundTransparency = 0.75})
                     end
                 end)
                 
-                hitbox.MouseLeave:Connect(function()
+                keybind.Button.MouseLeave:Connect(function()
                     if not listening then
-                        Tween(keybind.Button, 0.15, {ImageTransparency = 0.85})
+                        Tween(keybind.Button, 0.2, {BackgroundTransparency = 0.85})
                     end
                 end)
                 
@@ -1738,7 +1510,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 10),
                     VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -1755,33 +1527,33 @@ function CcatUI:Init(config)
                     Parent = picker.Frame,
                 })
                 
-                picker.Display = RoundFrame(6, "Squircle", {
-                    Size = UDim2.new(0, 38, 0, 24),
-                    ImageColor3 = picker.Default,
-                    ImageTransparency = 0,
+                picker.Display = New("TextButton", {
+                    Size = UDim2.new(0, 40, 0, 26),
+                    BackgroundColor3 = picker.Default,
+                    BorderSizePixel = 0,
+                    Text = "",
                     Parent = picker.Frame,
                 })
                 
-                local stroke = New("UIStroke", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 6),
+                    Parent = picker.Display,
+                })
+                
+                New("UIStroke", {
                     Color = self.Theme.Border,
                     Thickness = 1,
                     Parent = picker.Display,
                 })
                 
-                local hitbox = New("TextButton", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Parent = picker.Frame,
-                })
-                
                 local pickerOpen = false
                 local pickerFrame = nil
                 
-                hitbox.MouseButton1Click:Connect(function()
+                picker.Display.MouseButton1Click:Connect(function()
                     if pickerOpen then
                         if pickerFrame then
-                            Tween(pickerFrame, 0.15, {Size = UDim2.new(1, 0, 0, 0)}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-                            task.delay(0.15, function()
+                            Tween(pickerFrame, 0.2, {Size = UDim2.new(1, 0, 0, 0)}, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+                            task.delay(0.2, function()
                                 if pickerFrame then pickerFrame:Destroy() pickerFrame = nil end
                             end)
                         end
@@ -1795,17 +1567,24 @@ function CcatUI:Init(config)
                         Position = UDim2.new(0, 0, 1, 6),
                         BackgroundTransparency = 1,
                         ZIndex = 20,
+                        ClipsDescendants = true,
                         Parent = picker.Frame,
                     })
                     
-                    local pickerBg = RoundFrame(10, "Squircle", {
+                    local pickerBg = New("Frame", {
                         Size = UDim2.new(1, 0, 1, 0),
-                        ImageColor3 = self.Theme.ElementBackground,
-                        ImageTransparency = 0.9,
+                        BackgroundColor3 = self.Theme.ElementBackground,
+                        BackgroundTransparency = 0.1,
+                        BorderSizePixel = 0,
                         Parent = pickerFrame,
                     })
                     
-                    local pickerPadding = New("UIPadding", {
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, 10),
+                        Parent = pickerBg,
+                    })
+                    
+                    New("UIPadding", {
                         PaddingLeft = UDim.new(0, 10),
                         PaddingRight = UDim.new(0, 10),
                         PaddingTop = UDim.new(0, 10),
@@ -1818,39 +1597,16 @@ function CcatUI:Init(config)
                         Parent = pickerBg,
                     })
                     
-                    local hueSlider = New("Frame", {
-                        Size = UDim2.new(1, 0, 0, 16),
-                        BackgroundTransparency = 1,
-                        Parent = pickerBg,
-                    })
-                    
-                    local hueGradient = New("UIGradient", {
-                        Color = ColorSequence.new({
-                            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-                            ColorSequenceKeypoint.new(0.167, Color3.fromRGB(255, 255, 0)),
-                            ColorSequenceKeypoint.new(0.333, Color3.fromRGB(0, 255, 0)),
-                            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
-                            ColorSequenceKeypoint.new(0.667, Color3.fromRGB(0, 0, 255)),
-                            ColorSequenceKeypoint.new(0.833, Color3.fromRGB(255, 0, 255)),
-                            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0)),
-                        }),
-                        Parent = hueSlider,
-                    })
-                    
-                    local hueBg = RoundFrame(999, "Squircle", {
-                        Size = UDim2.new(1, 0, 1, 0),
-                        ImageColor3 = Color3.new(1, 1, 1),
-                        ImageTransparency = 0,
-                        Parent = hueSlider,
-                    })
-                    
-                    hueGradient.Parent = hueBg
-                    
                     local satValFrame = New("Frame", {
-                        Size = UDim2.new(1, 0, 0, 70),
-                        BackgroundColor3 = Color3.fromRGB(255, 0, 0),
+                        Size = UDim2.new(1, 0, 0, 80),
+                        BackgroundColor3 = Color3.fromHSV(0, 1, 1),
                         BorderSizePixel = 0,
                         Parent = pickerBg,
+                    })
+                    
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, 8),
+                        Parent = satValFrame,
                     })
                     
                     local satGradient = New("UIGradient", {
@@ -1880,20 +1636,45 @@ function CcatUI:Init(config)
                         Parent = valFrame,
                     })
                     
-                    Tween(pickerFrame, 0.25, {Size = UDim2.new(1, 0, 0, 120)}, Enum.EasingStyle.Back)
+                    local hueSlider = New("Frame", {
+                        Size = UDim2.new(1, 0, 0, 16),
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BorderSizePixel = 0,
+                        Parent = pickerBg,
+                    })
+                    
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, 8),
+                        Parent = hueSlider,
+                    })
+                    
+                    local hueGradient = New("UIGradient", {
+                        Color = ColorSequence.new({
+                            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+                            ColorSequenceKeypoint.new(0.167, Color3.fromRGB(255, 255, 0)),
+                            ColorSequenceKeypoint.new(0.333, Color3.fromRGB(0, 255, 0)),
+                            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
+                            ColorSequenceKeypoint.new(0.667, Color3.fromRGB(0, 0, 255)),
+                            ColorSequenceKeypoint.new(0.833, Color3.fromRGB(255, 0, 255)),
+                            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0)),
+                        }),
+                        Parent = hueSlider,
+                    })
+                    
+                    Tween(pickerFrame, 0.3, {Size = UDim2.new(1, 0, 0, 120)}, Enum.EasingStyle.Back)
                 end)
                 
-                hitbox.MouseEnter:Connect(function()
-                    Tween(picker.Display, 0.15, {Size = UDim2.new(0, 42, 0, 26)})
+                picker.Display.MouseEnter:Connect(function()
+                    Tween(picker.Display, 0.2, {Size = UDim2.new(0, 44, 0, 28)})
                 end)
                 
-                hitbox.MouseLeave:Connect(function()
-                    Tween(picker.Display, 0.15, {Size = UDim2.new(0, 38, 0, 24)})
+                picker.Display.MouseLeave:Connect(function()
+                    Tween(picker.Display, 0.2, {Size = UDim2.new(0, 40, 0, 26)})
                 end)
                 
                 function picker:Set(color)
                     picker.Value = color
-                    Tween(picker.Display, 0.15, {ImageColor3 = color})
+                    Tween(picker.Display, 0.2, {BackgroundColor3 = color})
                     pcall(picker.Callback, color)
                 end
                 
@@ -1907,12 +1688,12 @@ function CcatUI:Init(config)
                 progress.Max = config.Max or 100
                 
                 progress.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 40),
+                    Size = UDim2.new(1, 0, 0, 42),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = progress.Frame,
                 })
@@ -1923,7 +1704,7 @@ function CcatUI:Init(config)
                     Parent = progress.Frame,
                 })
                 
-                local headerLayout = New("UIListLayout", {
+                New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Parent = header,
                 })
@@ -1948,25 +1729,36 @@ function CcatUI:Init(config)
                     Parent = header,
                 })
                 
-                progress.Track = RoundFrame(999, "Squircle", {
+                progress.Track = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 8),
-                    ImageColor3 = self.Theme.ToggleDisabled,
-                    ImageTransparency = 0.5,
+                    BackgroundColor3 = self.Theme.ToggleDisabled,
+                    BackgroundTransparency = 0.5,
+                    BorderSizePixel = 0,
                     Parent = progress.Frame,
                 })
                 
-                progress.Fill = RoundFrame(999, "Squircle", {
-                    Size = UDim2.new(progress.Value / progress.Max, 0, 1, 0),
-                    ImageColor3 = self.Theme.Accent,
-                    ImageTransparency = 0,
+                New("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
                     Parent = progress.Track,
+                })
+                
+                progress.Fill = New("Frame", {
+                    Size = UDim2.new(progress.Value / progress.Max, 0, 1, 0),
+                    BackgroundColor3 = self.Theme.Accent,
+                    BorderSizePixel = 0,
+                    Parent = progress.Track,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(1, 0),
+                    Parent = progress.Fill,
                 })
                 
                 function progress:Set(value)
                     progress.Value = math.clamp(value, 0, progress.Max)
                     local percent = progress.Value / progress.Max
                     progress.ValueLabel.Text = math.floor(percent * 100) .. "%"
-                    Tween(progress.Fill, 0.25, {Size = UDim2.new(percent, 0, 1, 0)})
+                    Tween(progress.Fill, 0.3, {Size = UDim2.new(percent, 0, 1, 0)})
                 end
                 
                 return progress
@@ -1977,11 +1769,17 @@ function CcatUI:Init(config)
                 img.Image = config.Image or ""
                 img.Size = config.Size or UDim2.new(1, 0, 0, 120)
                 
-                img.Frame = RoundFrame(10, "Squircle", {
+                img.Frame = New("Frame", {
                     Size = img.Size,
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.9,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.9,
+                    BorderSizePixel = 0,
                     Parent = section.Frame,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 10),
+                    Parent = img.Frame,
                 })
                 
                 local imageLabel = New("ImageLabel", {
@@ -2003,16 +1801,22 @@ function CcatUI:Init(config)
                 search.Callback = config.Callback or function() end
                 
                 search.Frame = New("Frame", {
-                    Size = UDim2.new(1, 0, 0, 36),
+                    Size = UDim2.new(1, 0, 0, 38),
                     BackgroundTransparency = 1,
                     Parent = section.Frame,
                 })
                 
-                local searchBg = RoundFrame(8, "Squircle", {
+                local searchBg = New("Frame", {
                     Size = UDim2.new(1, 0, 1, 0),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
                     Parent = search.Frame,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = searchBg,
                 })
                 
                 local icon = New("ImageLabel", {
@@ -2039,13 +1843,13 @@ function CcatUI:Init(config)
                 })
                 
                 search.TextBox.Focused:Connect(function()
-                    Tween(searchBg, 0.15, {ImageTransparency = 0.7, ImageColor3 = self.Theme.Hover})
-                    Tween(icon, 0.15, {ImageColor3 = self.Theme.Accent})
+                    Tween(searchBg, 0.2, {BackgroundTransparency = 0.7, BackgroundColor3 = self.Theme.Hover})
+                    Tween(icon, 0.2, {ImageColor3 = self.Theme.Accent})
                 end)
                 
                 search.TextBox.FocusLost:Connect(function()
-                    Tween(searchBg, 0.15, {ImageTransparency = 0.85, ImageColor3 = self.Theme.ElementBackground})
-                    Tween(icon, 0.15, {ImageColor3 = self.Theme.SecondaryText})
+                    Tween(searchBg, 0.2, {BackgroundTransparency = 0.85, BackgroundColor3 = self.Theme.ElementBackground})
+                    Tween(icon, 0.2, {ImageColor3 = self.Theme.SecondaryText})
                 end)
                 
                 search.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -2075,7 +1879,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = dropdown.Frame,
                 })
@@ -2090,14 +1894,21 @@ function CcatUI:Init(config)
                     Parent = dropdown.Frame,
                 })
                 
-                dropdown.Button = RoundFrame(8, "Squircle", {
+                dropdown.Button = New("TextButton", {
                     Size = UDim2.new(1, 0, 0, 34),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
+                    Text = "",
                     Parent = dropdown.Frame,
                 })
                 
-                local btnPadding = New("UIPadding", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = dropdown.Button,
+                })
+                
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = dropdown.Button,
@@ -2127,23 +1938,29 @@ function CcatUI:Init(config)
                     Parent = dropdown.Button,
                 })
                 
-                dropdown.Menu = RoundFrame(8, "Squircle", {
+                dropdown.Menu = New("Frame", {
                     Size = UDim2.new(1, 0, 0, 0),
                     Position = UDim2.new(0, 0, 1, 4),
-                    ImageColor3 = self.Theme.Background,
-                    ImageTransparency = 1,
+                    BackgroundColor3 = self.Theme.Background,
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
                     Visible = false,
                     ZIndex = 10,
                     Parent = dropdown.Button,
                 })
                 
-                local menuStroke = New("UIStroke", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = dropdown.Menu,
+                })
+                
+                New("UIStroke", {
                     Color = self.Theme.Border,
                     Thickness = 1,
                     Parent = dropdown.Menu,
                 })
                 
-                local menuPadding = New("UIPadding", {
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 6),
                     PaddingRight = UDim.new(0, 6),
                     PaddingTop = UDim.new(0, 6),
@@ -2151,7 +1968,7 @@ function CcatUI:Init(config)
                     Parent = dropdown.Menu,
                 })
                 
-                local menuLayout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 4),
                     Parent = dropdown.Menu,
                 })
@@ -2159,30 +1976,42 @@ function CcatUI:Init(config)
                 local optionButtons = {}
                 
                 for _, option in pairs(dropdown.Options) do
-                    local optBtn = RoundFrame(6, "Squircle", {
+                    local optBtn = New("TextButton", {
                         Size = UDim2.new(1, 0, 0, 28),
-                        ImageColor3 = self.Theme.ElementBackground,
-                        ImageTransparency = 1,
+                        BackgroundColor3 = self.Theme.ElementBackground,
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Text = "",
                         Parent = dropdown.Menu,
+                    })
+                    
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, 6),
+                        Parent = optBtn,
                     })
                     
                     local optLayout = New("UIListLayout", {
                         FillDirection = Enum.FillDirection.Horizontal,
-                        Padding = UDim.new(0, 6),
+                        Padding = UDim.new(0, 8),
                         VerticalAlignment = Enum.VerticalAlignment.Center,
                         Parent = optBtn,
                     })
                     
-                    local optPadding = New("UIPadding", {
+                    New("UIPadding", {
                         PaddingLeft = UDim.new(0, 8),
                         Parent = optBtn,
                     })
                     
-                    local checkBox = RoundFrame(4, "Squircle", {
+                    local checkBox = New("Frame", {
                         Size = UDim2.new(0, 16, 0, 16),
-                        ImageColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled,
-                        ImageTransparency = 0,
+                        BackgroundColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled,
+                        BorderSizePixel = 0,
                         Parent = optBtn,
+                    })
+                    
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, 4),
+                        Parent = checkBox,
                     })
                     
                     local checkIcon = New("ImageLabel", {
@@ -2202,28 +2031,22 @@ function CcatUI:Init(config)
                         TextSize = 12,
                         TextColor3 = self.Theme.Text,
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, -24, 1, 0),
+                        Size = UDim2.new(1, -28, 1, 0),
                         Parent = optBtn,
                     })
                     
-                    local optHitbox = New("TextButton", {
-                        Size = UDim2.new(1, 0, 1, 0),
-                        BackgroundTransparency = 1,
-                        Parent = optBtn,
-                    })
-                    
-                    optHitbox.MouseEnter:Connect(function()
-                        Tween(optBtn, 0.15, {ImageTransparency = 0.85})
+                    optBtn.MouseEnter:Connect(function()
+                        Tween(optBtn, 0.15, {BackgroundTransparency = 0.85})
                     end)
                     
-                    optHitbox.MouseLeave:Connect(function()
-                        Tween(optBtn, 0.15, {ImageTransparency = 1})
+                    optBtn.MouseLeave:Connect(function()
+                        Tween(optBtn, 0.15, {BackgroundTransparency = 1})
                     end)
                     
-                    optHitbox.MouseButton1Click:Connect(function()
+                    optBtn.MouseButton1Click:Connect(function()
                         dropdown.Selected[option] = not dropdown.Selected[option]
-                        Tween(checkBox, 0.15, {ImageColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled})
-                        Tween(checkIcon, 0.15, {ImageTransparency = dropdown.Selected[option] and 0 or 1})
+                        Tween(checkBox, 0.2, {BackgroundColor3 = dropdown.Selected[option] and self.Theme.ToggleEnabled or self.Theme.ToggleDisabled})
+                        Tween(checkIcon, 0.2, {ImageTransparency = dropdown.Selected[option] and 0 or 1})
                         
                         local selectedList = {}
                         for opt, selected in pairs(dropdown.Selected) do
@@ -2244,36 +2067,30 @@ function CcatUI:Init(config)
                 function dropdown:Open()
                     dropdown.Opened = true
                     dropdown.Menu.Visible = true
-                    Tween(arrow, 0.2, {Rotation = 180})
-                    Tween(dropdown.Menu, 0.2, {ImageTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 32 + 12, 180))})
+                    Tween(arrow, 0.25, {Rotation = 180})
+                    Tween(dropdown.Menu, 0.25, {BackgroundTransparency = 0.05, Size = UDim2.new(1, 0, 0, math.min(#dropdown.Options * 32 + 12, 180))})
                 end
                 
                 function dropdown:Close()
                     dropdown.Opened = false
-                    Tween(arrow, 0.2, {Rotation = 0})
-                    Tween(dropdown.Menu, 0.15, {ImageTransparency = 1, Size = UDim2.new(1, 0, 0, 0)})
-                    task.delay(0.15, function()
+                    Tween(arrow, 0.25, {Rotation = 0})
+                    Tween(dropdown.Menu, 0.2, {BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0)})
+                    task.delay(0.2, function()
                         if not dropdown.Opened then
                             dropdown.Menu.Visible = false
                         end
                     end)
                 end
                 
-                local hitbox = New("TextButton", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Parent = dropdown.Button,
-                })
-                
-                hitbox.MouseEnter:Connect(function()
-                    Tween(dropdown.Button, 0.15, {ImageTransparency = 0.75})
+                dropdown.Button.MouseEnter:Connect(function()
+                    Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.75})
                 end)
                 
-                hitbox.MouseLeave:Connect(function()
-                    Tween(dropdown.Button, 0.15, {ImageTransparency = 0.85})
+                dropdown.Button.MouseLeave:Connect(function()
+                    Tween(dropdown.Button, 0.2, {BackgroundTransparency = 0.85})
                 end)
                 
-                hitbox.MouseButton1Click:Connect(function()
+                dropdown.Button.MouseButton1Click:Connect(function()
                     if dropdown.Opened then
                         dropdown:Close()
                     else
@@ -2298,7 +2115,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = list.Frame,
                 })
@@ -2313,14 +2130,20 @@ function CcatUI:Init(config)
                     Parent = list.Frame,
                 })
                 
-                list.Container = RoundFrame(8, "Squircle", {
-                    Size = UDim2.new(1, 0, 0, math.min(#list.Options * 30 + 12, 180)),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.9,
+                list.Container = New("Frame", {
+                    Size = UDim2.new(1, 0, 0, math.min(#list.Options * 32 + 12, 160)),
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.9,
+                    BorderSizePixel = 0,
                     Parent = list.Frame,
                 })
                 
-                local containerPadding = New("UIPadding", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = list.Container,
+                })
+                
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 6),
                     PaddingRight = UDim.new(0, 6),
                     PaddingTop = UDim.new(0, 6),
@@ -2339,8 +2162,8 @@ function CcatUI:Init(config)
                     Parent = list.Container,
                 })
                 
-                local scrollLayout = New("UIListLayout", {
-                    Padding = UDim.new(0, 2),
+                New("UIListLayout", {
+                    Padding = UDim.new(0, 3),
                     Parent = scrollFrame,
                 })
                 
@@ -2348,11 +2171,18 @@ function CcatUI:Init(config)
                 local optionFrames = {}
                 
                 for _, option in pairs(list.Options) do
-                    local optBtn = RoundFrame(6, "Squircle", {
-                        Size = UDim2.new(1, 0, 0, 26),
-                        ImageColor3 = option == list.Default and self.Theme.Accent or self.Theme.ElementBackground,
-                        ImageTransparency = option == list.Default and 0 or 1,
+                    local optBtn = New("TextButton", {
+                        Size = UDim2.new(1, 0, 0, 28),
+                        BackgroundColor3 = option == list.Default and self.Theme.Accent or self.Theme.ElementBackground,
+                        BackgroundTransparency = option == list.Default and 0 or 1,
+                        BorderSizePixel = 0,
+                        Text = "",
                         Parent = scrollFrame,
+                    })
+                    
+                    New("UICorner", {
+                        CornerRadius = UDim.new(0, 6),
+                        Parent = optBtn,
                     })
                     
                     local optLabel = New("TextLabel", {
@@ -2365,35 +2195,29 @@ function CcatUI:Init(config)
                         Parent = optBtn,
                     })
                     
-                    local optHitbox = New("TextButton", {
-                        Size = UDim2.new(1, 0, 1, 0),
-                        BackgroundTransparency = 1,
-                        Parent = optBtn,
-                    })
-                    
-                    optHitbox.MouseEnter:Connect(function()
+                    optBtn.MouseEnter:Connect(function()
                         if list.Selected ~= option then
-                            Tween(optBtn, 0.15, {ImageTransparency = 0.85})
+                            Tween(optBtn, 0.15, {BackgroundTransparency = 0.85})
                         end
                     end)
                     
-                    optHitbox.MouseLeave:Connect(function()
+                    optBtn.MouseLeave:Connect(function()
                         if list.Selected ~= option then
-                            Tween(optBtn, 0.15, {ImageTransparency = 1})
+                            Tween(optBtn, 0.15, {BackgroundTransparency = 1})
                         end
                     end)
                     
-                    optHitbox.MouseButton1Click:Connect(function()
+                    optBtn.MouseButton1Click:Connect(function()
                         if list.Selected then
                             local prev = optionFrames[list.Selected]
                             if prev then
-                                Tween(prev.Btn, 0.15, {ImageTransparency = 1, ImageColor3 = self.Theme.ElementBackground})
+                                Tween(prev.Btn, 0.2, {BackgroundTransparency = 1, BackgroundColor3 = self.Theme.ElementBackground})
                                 prev.Label.TextColor3 = self.Theme.Text
                             end
                         end
                         
                         list.Selected = option
-                        Tween(optBtn, 0.15, {ImageTransparency = 0, ImageColor3 = self.Theme.Accent})
+                        Tween(optBtn, 0.2, {BackgroundTransparency = 0, BackgroundColor3 = self.Theme.Accent})
                         optLabel.TextColor3 = Color3.new(1, 1, 1)
                         
                         pcall(list.Callback, option)
@@ -2422,7 +2246,7 @@ function CcatUI:Init(config)
                     Parent = section.Frame,
                 })
                 
-                local layout = New("UIListLayout", {
+                New("UIListLayout", {
                     Padding = UDim.new(0, 6),
                     Parent = numInput.Frame,
                 })
@@ -2443,17 +2267,24 @@ function CcatUI:Init(config)
                     Parent = numInput.Frame,
                 })
                 
-                local containerLayout = New("UIListLayout", {
+                New("UIListLayout", {
                     FillDirection = Enum.FillDirection.Horizontal,
                     Padding = UDim.new(0, 6),
                     Parent = inputContainer,
                 })
                 
-                local minusBtn = RoundFrame(6, "Squircle", {
+                local minusBtn = New("TextButton", {
                     Size = UDim2.new(0, 36, 0, 36),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
+                    Text = "",
                     Parent = inputContainer,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 6),
+                    Parent = minusBtn,
                 })
                 
                 local minusIcon = New("ImageLabel", {
@@ -2466,20 +2297,20 @@ function CcatUI:Init(config)
                     Parent = minusBtn,
                 })
                 
-                local minusHitbox = New("TextButton", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Parent = minusBtn,
-                })
-                
-                numInput.BoxFrame = RoundFrame(8, "Squircle", {
+                numInput.BoxFrame = New("Frame", {
                     Size = UDim2.new(1, -84, 0, 36),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
                     Parent = inputContainer,
                 })
                 
-                local boxPadding = New("UIPadding", {
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 8),
+                    Parent = numInput.BoxFrame,
+                })
+                
+                New("UIPadding", {
                     PaddingLeft = UDim.new(0, 12),
                     PaddingRight = UDim.new(0, 12),
                     Parent = numInput.BoxFrame,
@@ -2496,11 +2327,18 @@ function CcatUI:Init(config)
                     Parent = numInput.BoxFrame,
                 })
                 
-                local plusBtn = RoundFrame(6, "Squircle", {
+                local plusBtn = New("TextButton", {
                     Size = UDim2.new(0, 36, 0, 36),
-                    ImageColor3 = self.Theme.ElementBackground,
-                    ImageTransparency = 0.85,
+                    BackgroundColor3 = self.Theme.ElementBackground,
+                    BackgroundTransparency = 0.85,
+                    BorderSizePixel = 0,
+                    Text = "",
                     Parent = inputContainer,
+                })
+                
+                New("UICorner", {
+                    CornerRadius = UDim.new(0, 6),
+                    Parent = plusBtn,
                 })
                 
                 local plusIcon = New("ImageLabel", {
@@ -2513,23 +2351,17 @@ function CcatUI:Init(config)
                     Parent = plusBtn,
                 })
                 
-                local plusHitbox = New("TextButton", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Parent = plusBtn,
-                })
-                
                 function numInput:Set(value)
                     numInput.Value = math.clamp(value, numInput.Min, numInput.Max)
                     numInput.TextBox.Text = tostring(numInput.Value)
                     pcall(numInput.Callback, numInput.Value)
                 end
                 
-                minusHitbox.MouseButton1Click:Connect(function()
+                minusBtn.MouseButton1Click:Connect(function()
                     numInput:Set(numInput.Value - numInput.Step)
                 end)
                 
-                plusHitbox.MouseButton1Click:Connect(function()
+                plusBtn.MouseButton1Click:Connect(function()
                     numInput:Set(numInput.Value + numInput.Step)
                 end)
                 
