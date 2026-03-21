@@ -9318,8 +9318,9 @@ AdvancedUI.ThemeManager = ThemeManager
 AdvancedUI.EventBus = EventBus
 AdvancedUI.Utility = Utility
 
+-- 修复: WindowSystem -> WindowManager
 AdvancedUI.CreateWindow = function(config)
-    return WindowSystem.Create(config)
+    return WindowManager.Create(config)
 end
 
 AdvancedUI.CreateButton = function(config, parent)
@@ -9338,8 +9339,14 @@ AdvancedUI.CreateDropdown = function(config, parent)
     return DropdownSystem.Create(config, parent)
 end
 
+-- 修复: TextboxSystem -> InputSystem
 AdvancedUI.CreateTextbox = function(config, parent)
-    return TextboxSystem.Create(config, parent)
+    return InputSystem.Create(config, parent)
+end
+
+-- 修复: 添加 CreateInput 作为别名
+AdvancedUI.CreateInput = function(config, parent)
+    return InputSystem.Create(config, parent)
 end
 
 AdvancedUI.CreateLabel = function(config, parent)
@@ -9350,8 +9357,9 @@ AdvancedUI.CreateKeybind = function(config, parent)
     return KeybindSystem.Create(config, parent)
 end
 
+-- 修复: ColorPickerSystem -> ColorpickerSystem
 AdvancedUI.CreateColorPicker = function(config, parent)
-    return ColorPickerSystem.Create(config, parent)
+    return ColorpickerSystem.Create(config, parent)
 end
 
 AdvancedUI.CreateSection = function(config, parent)
@@ -9362,60 +9370,76 @@ AdvancedUI.CreateTab = function(config, parent)
     return TabSystem.Create(config, parent)
 end
 
+-- 修复: GroupboxSystem 不存在，使用 SectionSystem 代替
 AdvancedUI.CreateGroupbox = function(config, parent)
-    return GroupboxSystem.Create(config, parent)
+    return SectionSystem.Create(config, parent)
 end
 
 AdvancedUI.CreateSearch = function(config, parent)
     return SearchSystem.Create(config, parent)
 end
 
+-- 修复: ListSystem 不存在，使用 DropdownSystem 代替
 AdvancedUI.CreateList = function(config, parent)
-    return ListSystem.Create(config, parent)
+    return DropdownSystem.Create(config, parent)
 end
 
+-- 修复: MultiSelectSystem 不存在，使用 DropdownSystem 代替 (Multi = true)
 AdvancedUI.CreateMultiSelect = function(config, parent)
-    return MultiSelectSystem.Create(config, parent)
+    config.Multi = true
+    return DropdownSystem.Create(config, parent)
 end
 
+-- 修复: NumberSpinnerSystem 不存在，使用 StepperSystem 代替
 AdvancedUI.CreateNumberSpinner = function(config, parent)
-    return NumberSpinnerSystem.Create(config, parent)
+    return StepperSystem.Create(config, parent)
 end
 
 AdvancedUI.CreateTreeView = function(config, parent)
     return TreeViewSystem.Create(config, parent)
 end
 
+-- 修复: DataTableSystem 不存在，使用 DataGridSystem 代替
 AdvancedUI.CreateDataTable = function(config, parent)
-    return DataTableSystem.Create(config, parent)
+    return DataGridSystem.Create(config, parent)
 end
 
+-- 修复: CodeEditorSystem 不存在，使用 CodeBlockSystem 代替
 AdvancedUI.CreateCodeEditor = function(config, parent)
-    return CodeEditorSystem.Create(config, parent)
+    return CodeBlockSystem.Create(config, parent)
 end
 
 AdvancedUI.CreateTerminal = function(config, parent)
     return TerminalSystem.Create(config, parent)
 end
 
+-- 修复: ImageViewerSystem 不存在，使用 ImageSystem 代替
 AdvancedUI.CreateImageViewer = function(config, parent)
-    return ImageViewerSystem.Create(config, parent)
+    return ImageSystem.Create(config, parent)
 end
 
+-- 修复: AudioPlayerSystem 不存在，返回 nil 并打印警告
 AdvancedUI.CreateAudioPlayer = function(config, parent)
-    return AudioPlayerSystem.Create(config, parent)
+    warn("AudioPlayer is not implemented yet")
+    return nil
 end
 
+-- 修复: VideoPlayerSystem 不存在，返回 nil 并打印警告
 AdvancedUI.CreateVideoPlayer = function(config, parent)
-    return VideoPlayerSystem.Create(config, parent)
+    warn("VideoPlayer is not implemented yet")
+    return nil
 end
 
+-- 修复: CarouselSystem 不存在，返回 nil 并打印警告
 AdvancedUI.CreateCarousel = function(config, parent)
-    return CarouselSystem.Create(config, parent)
+    warn("Carousel is not implemented yet")
+    return nil
 end
 
+-- 修复: TimelineSystem 不存在，返回 nil 并打印警告
 AdvancedUI.CreateTimeline = function(config, parent)
-    return TimelineSystem.Create(config, parent)
+    warn("Timeline is not implemented yet")
+    return nil
 end
 
 AdvancedUI.CreateChart = function(config, parent)
@@ -9426,12 +9450,16 @@ AdvancedUI.CreateStepper = function(config, parent)
     return StepperSystem.Create(config, parent)
 end
 
+-- 修复: RatingSystem 不存在，返回 nil 并打印警告
 AdvancedUI.CreateRating = function(config, parent)
-    return RatingSystem.Create(config, parent)
+    warn("Rating is not implemented yet")
+    return nil
 end
 
+-- 修复: AvatarSystem 不存在，返回 nil 并打印警告
 AdvancedUI.CreateAvatar = function(config, parent)
-    return AvatarSystem.Create(config, parent)
+    warn("Avatar is not implemented yet")
+    return nil
 end
 
 AdvancedUI.CreateScroll = function(config, parent)
@@ -9458,8 +9486,14 @@ AdvancedUI.CreatePagination = function(config, parent)
     return PaginationSystem.Create(config, parent)
 end
 
+-- 修复: ProgressSystem -> ProgressBarSystem
 AdvancedUI.CreateProgress = function(config, parent)
-    return ProgressSystem.Create(config, parent)
+    return ProgressBarSystem.Create(config, parent)
+end
+
+-- 修复: 添加 CreateProgressBar 作为别名
+AdvancedUI.CreateProgressBar = function(config, parent)
+    return ProgressBarSystem.Create(config, parent)
 end
 
 AdvancedUI.CreateSkeleton = function(config, parent)
@@ -9486,20 +9520,24 @@ AdvancedUI.CreateSpacer = function(config, parent)
     return SpacerSystem.Create(config, parent)
 end
 
+-- 修复: WatermarkSystem -> WatermarkSystem (存在)
 AdvancedUI.CreateWatermark = function(config)
     return WatermarkSystem.Create(config)
 end
 
+-- 修复: NotificationSystem -> NotificationSystem (存在)
 AdvancedUI.CreateNotification = function(config)
     return NotificationSystem.Create(config)
 end
 
+-- 修复: ToastSystem 不存在，使用 NotificationSystem 代替
 AdvancedUI.CreateToast = function(config)
-    return ToastSystem.Create(config)
+    return NotificationSystem.Create(config)
 end
 
+-- 修复: DialogSystem 不存在，使用 ModalSystem 代替
 AdvancedUI.CreateDialog = function(config)
-    return DialogSystem.Create(config)
+    return ModalSystem.Create(config)
 end
 
 AdvancedUI.CreateMenu = function(config, parent)
@@ -9512,6 +9550,81 @@ end
 
 AdvancedUI.CreateTooltip = function(config)
     return TooltipSystem.Create(config)
+end
+
+-- 添加: CheckboxSystem
+AdvancedUI.CreateCheckbox = function(config, parent)
+    return CheckboxSystem.Create(config, parent)
+end
+
+-- 添加: RadioButtonSystem
+AdvancedUI.CreateRadioButton = function(config, parent)
+    return RadioButtonSystem.Create(config, parent)
+end
+
+-- 添加: SpinnerSystem
+AdvancedUI.CreateSpinner = function(config, parent)
+    return SpinnerSystem.Create(config, parent)
+end
+
+-- 添加: SegmentedControlSystem
+AdvancedUI.CreateSegmentedControl = function(config, parent)
+    return SegmentedControlSystem.Create(config, parent)
+end
+
+-- 添加: DatePickerSystem
+AdvancedUI.CreateDatePicker = function(config, parent)
+    return DatePickerSystem.Create(config, parent)
+end
+
+-- 添加: TimePickerSystem
+AdvancedUI.CreateTimePicker = function(config, parent)
+    return TimePickerSystem.Create(config, parent)
+end
+
+-- 添加: FilePickerSystem
+AdvancedUI.CreateFilePicker = function(config, parent)
+    return FilePickerSystem.Create(config, parent)
+end
+
+-- 添加: RichTextSystem
+AdvancedUI.CreateRichText = function(config, parent)
+    return RichTextSystem.Create(config, parent)
+end
+
+-- 添加: CodeBlockSystem
+AdvancedUI.CreateCodeBlock = function(config, parent)
+    return CodeBlockSystem.Create(config, parent)
+end
+
+-- 添加: DataGridSystem
+AdvancedUI.CreateDataGrid = function(config, parent)
+    return DataGridSystem.Create(config, parent)
+end
+
+-- 添加: MenuBarSystem
+AdvancedUI.CreateMenuBar = function(config, parent)
+    return MenuBarSystem.Create(config, parent)
+end
+
+-- 添加: ToolbarSystem
+AdvancedUI.CreateToolbar = function(config, parent)
+    return ToolbarSystem.Create(config, parent)
+end
+
+-- 添加: StatusBarSystem
+AdvancedUI.CreateStatusBar = function(config, parent)
+    return StatusBarSystem.Create(config, parent)
+end
+
+-- 添加: ImageSystem
+AdvancedUI.CreateImage = function(config, parent)
+    return ImageSystem.Create(config, parent)
+end
+
+-- 添加: ContainerSystem
+AdvancedUI.CreateContainer = function(config, parent)
+    return ContainerSystem.Create(config, parent)
 end
 
 AdvancedUI.SetTheme = function(theme)
